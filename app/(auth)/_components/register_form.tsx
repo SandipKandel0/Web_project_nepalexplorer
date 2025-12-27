@@ -14,7 +14,7 @@ export default function RegisterForm() {
   const [error, setError] = useState("");
 
   const handleSubmit = () => {
-    // Simple manual validation
+
     if (!form.fullName || form.fullName === " ") {
       setError("Full name is required");
       return;

@@ -23,7 +23,6 @@ export default function LoginForm() {
       <p className="text-gray-500 mb-6">Login to continue</p>
 
       <div className="w-20 h-20 rounded-full bg-gray-200 mb-6 flex items-center justify-center text-gray-500 text-xl font-bold">
-        Logo
       </div>
 
       <input
