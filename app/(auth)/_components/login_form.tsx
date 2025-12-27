@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { loginSchema } from "../schema";
+import Link from "next/link";
+import { SiGoogle } from "react-icons/si";
 
 export default function LoginForm() {
   const [form, setForm] = useState({ username: "", password: "" });
@@ -18,46 +20,69 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto mt-20 p-8 bg-white shadow-md rounded-lg flex flex-col items-center">
-      <h1 className="text-3xl font-bold text-gray-800 mb-2">Welcome!!</h1>
-      <p className="text-gray-500 mb-6">Login to continue</p>
+    <div className="w-full max-w-md flex flex-col items-center">
 
-      <div className="w-20 h-20 rounded-full bg-gray-200 mb-6 flex items-center justify-center text-gray-500 text-xl font-bold">
+      <h1 className="text-3xl font-extrabold text-gray-800 mb-2">Welcome Back!</h1>
+      <p className="text-gray-500 mb-6 text-center">
+        Login to continue 
+      </p>
+
+
+      <div className="w-full mb-4">
+        <label htmlFor="username" className="block text-gray-700 font-semibold mb-1">
+          Username
+        </label>
+        <input
+          id="username"
+          type="text"
+          placeholder="Enter your username"
+          className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
+          onChange={(e) => setForm({ ...form, username: e.target.value })}
+        />
       </div>
 
-      <input
-        type="text"
-        placeholder="Username"
-        className="w-full mb-4 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-black"
-        onChange={(e) => setForm({ ...form, username: e.target.value })}
-      />
+      <div className="w-full mb-2">
+        <label htmlFor="password" className="block text-gray-700 font-semibold mb-1">
+          Password
+        </label>
+        <input
+          id="password"
+          type="password"
+          placeholder="Enter your password"
+          className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
+          onChange={(e) => setForm({ ...form, password: e.target.value })}
+        />
+      </div>
 
-      <input
-        type="password"
-        placeholder="Password"
-        className="w-full mb-2 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-black"
-        onChange={(e) => setForm({ ...form, password: e.target.value })}
-      />
-
-      <div className="w-full flex justify-end mb-2">
+ 
+      <div className="w-full flex justify-end mb-3">
         <a href="/forgot-password" className="text-sm text-blue-500 hover:underline">
           Forgot Password?
         </a>
       </div>
 
-      {error && <p className="text-red-500 text-sm mb-2 self-start">{error}</p>}
+      {error && <p className="text-red-500 text-sm mb-3 self-start">{error}</p>}
 
       <button
         onClick={handleSubmit}
-        className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 rounded-md mt-2 transition-colors"
+        className="w-full py-2 mb-4 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold shadow-md transition-all"
       >
         Log In
       </button>
 
-      <p className="text-gray-400 text-sm my-4">OR</p>
-      <button className="w-full flex items-center justify-center bg-red-500 hover:bg-red-600 text-white font-semibold py-2 rounded-md transition-colors">
-        Continue with Google
-      </button>
+
+      <div className="flex items-center w-full my-3">
+        <hr className="flex-grow border-gray-300" />
+        <span className="mx-2 text-gray-400">OR</span>
+        <hr className="flex-grow border-gray-300" />
+      </div>
+
+      <p className="text-sm text-gray-500 mt-6">
+        Don’t have an account?{" "}
+        <Link href="/register" className="text-blue-500 hover:underline font-semibold">
+          Sign Up
+        </Link>
+      </p>
     </div>
   );
 }

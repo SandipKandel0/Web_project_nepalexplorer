@@ -1,23 +1,31 @@
+"use client";
+
 import LoginForm from "../_components/login_form";
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-      <div className="bg-white rounded-xl shadow-lg flex flex-col md:flex-row w-full max-w-4xl overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
+      <div className="bg-white rounded-3xl shadow-2xl flex flex-col md:flex-row w-full max-w-5xl overflow-hidden">
 
-        <div className="w-full md:w-1/2 p-8 bg-gray-50 flex items-center justify-center">
+        {/* Left Side: Login Form */}
+        <div className="w-full md:w-1/2 p-10 flex flex-col items-center justify-center bg-white">
           <LoginForm />
         </div>
 
-        <div className="w-full md:w-1/2 p-8 flex flex-col items-center justify-center">
-          <h2 className="font-bold text-2xl mb-4 text-gray-800 text-center">
-            Discover Places, Create Memories, Live the Journey.
+        {/* Right Side: Hero / Image Section */}
+        <div className="w-full md:w-1/2 relative flex flex-col items-center justify-center p-10 bg-gradient-to-br from-yellow-100 to-orange-300">
+          <h2 className="font-extrabold text-3xl md:text-4xl mb-6 text-center text-white drop-shadow-md">
+            Discover Places, Create Memories
           </h2>
           <img
             src="/image.jpeg"
             alt="Nepal"
-            className="rounded-lg object-cover w-80 h-48 md:w-96 md:h-60"
+            className="rounded-2xl shadow-xl object-cover w-72 h-48 md:w-96 md:h-64 border-4 border-white"
           />
+
+          {/* Subtle decorative circles */}
+          <div className="absolute top-0 left-0 w-24 h-24 bg-white opacity-10 rounded-full -translate-x-1/2 -translate-y-1/2"></div>
+          <div className="absolute bottom-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full translate-x-1/3 translate-y-1/3"></div>
         </div>
 
       </div>
