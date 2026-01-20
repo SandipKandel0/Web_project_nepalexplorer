@@ -15,7 +15,7 @@ export default function LoginForm() {
       setError(result.error.issues[0].message);
     } else {
       setError("");
-      alert("Login successful (dummy)");
+      alert("Login successful ");
     }
   };
 
@@ -24,7 +24,7 @@ export default function LoginForm() {
 
       <h1 className="text-3xl font-extrabold text-gray-800 mb-2">Welcome Back!</h1>
       <p className="text-gray-500 mb-6 text-center">
-        Login to continue 
+        Login to continue
       </p>
 
 
