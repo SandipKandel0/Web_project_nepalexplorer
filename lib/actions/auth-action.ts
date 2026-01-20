@@ -6,10 +6,16 @@ import { redirect } from "next/navigation";
 import { clearAuthCookies, setAuthToken, setUserData } from "../cookies";
 
 export const handleRegister = async (data: any) => {
-  try {
-    // Validate using Zod schema
-    registerSchema.parse(data);
-    const response = await register(data);
+try {
+    // 1️⃣ Validate FIRST (confirmPassword required here)
+    const parsed = registerSchema.parse(data);
+
+    // 2️⃣ Remove confirmPassword BEFORE backend
+    const { confirmPassword, ...payload } = parsed;
+
+    // 3️⃣ Call backend API
+    const response = await register(payload);
+
     if (response.success) {
     return {
         success: true,
@@ -17,6 +23,7 @@ export const handleRegister = async (data: any) => {
         data: response.data,
     };
     }
+
     return {
     success: false,
     message: response.message || "Registration failed",
@@ -24,9 +31,9 @@ export const handleRegister = async (data: any) => {
 } catch (error: any) {
     return {
     success: false,
-    message: error.message || "Registration action failed",
+    message: error.errors?.[0]?.message || error.message,
     };
-  }
+}
 };
 
 export const handleLogin = async (data: any) => {
