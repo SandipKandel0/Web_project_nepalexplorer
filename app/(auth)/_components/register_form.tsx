@@ -37,7 +37,7 @@ export default function RegisterForm() {
     }
 
     setError("");
-    alert("Registration successful (dummy)");
+    alert("Registration successful");
   };
 
   return (
