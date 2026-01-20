@@ -42,9 +42,10 @@ try {
     loginSchema.parse(data);
 
     const response = await login(data);
-
     if (response.success) {
-    if (response.token) await setAuthToken(response.token);
+
+
+    if (response.data.token) await setAuthToken(response.data.token);
     if (response.data) await setUserData(response.data);
 
     return {

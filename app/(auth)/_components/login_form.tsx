@@ -7,7 +7,7 @@ import Link from "next/link";
 import { SiGoogle } from "react-icons/si";
 
 export default function LoginForm() {
-  const [form, setForm] = useState({ username: "", password: "" });
+  const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [pending, setTransition] = useTransition();
 
@@ -45,15 +45,15 @@ export default function LoginForm() {
       </p>
 
       <div className="w-full mb-4">
-        <label htmlFor="username" className="block text-gray-700 font-semibold mb-1">
-          Username
+        <label htmlFor="email" className="block text-gray-700 font-semibold mb-1">
+          Email
         </label>
         <input
-          id="username"
+          id="email"
           type="text"
-          placeholder="Enter your username"
+          placeholder="Enter your email"
           className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
-          onChange={(e) => setForm({ ...form, username: e.target.value })}
+          onChange={(e) => setForm({ ...form, email: e.target.value })}
         />
       </div>
 
