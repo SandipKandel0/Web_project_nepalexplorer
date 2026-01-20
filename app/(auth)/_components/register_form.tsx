@@ -1,122 +1,115 @@
 "use client";
 
-import { useState } from "react";
-import { registerSchema } from "../schema";
+import { useState, useTransition } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { loginSchema } from "../schema";
+import { handleLogin } from "@/lib/actions/auth-action";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { SiGoogle } from "react-icons/si";
 
-export default function RegisterForm() {
-  const [form, setForm] = useState({
-    fullName: "",
-    mobile: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
+export default function LoginForm() {
+  const router = useRouter();
+  const [pending, setTransition] = useTransition();
+  const [serverError, setServerError] = useState<string | null>(null);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    resolver: zodResolver(loginSchema),
+    mode: "onSubmit",
   });
-  const [error, setError] = useState("");
 
-  const handleSubmit = () => {
-    if (!form.fullName.trim()) {
-      setError("Full name is required");
-      return;
-    }
-    if (!form.mobile || form.mobile.length < 10) {
-      setError("Invalid mobile number");
-      return;
-    }
-    if (!form.email) {
-      setError("Email is required");
-      return;
-    }
-    if (!form.password || form.password.length < 6) {
-      setError("Password must be at least 6 characters");
-      return;
-    }
-    if (form.password !== form.confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
+  const submit = async (values: any) => {
+    setServerError(null);
 
-    setError("");
-    alert("Registration successful");
+    setTransition(async () => {
+      try {
+        const response = await handleLogin(values);
+        if (!response.success) {
+          throw new Error(response.message);
+        }
+        // Redirect after successful login
+        router.push("/user/dashboard");
+      } catch (err: any) {
+        setServerError(err.message || "Login failed");
+      }
+    });
   };
 
   return (
-    <div className="w-full max-w-md mx-auto p-10 bg-yellow-20 rounded-2xl shadow-lg flex flex-col items-center">
-      <h1 className="text-4xl font-extrabold text-yellow-600 mb-2 text-center">
-        Join NepalExplorer
-      </h1>
-      <p className="text-yellow-800 mb-6 text-center">
-        Create an account to start your adventure
-      </p>
+    <div className="w-full max-w-md flex flex-col items-center">
+      <h1 className="text-3xl font-extrabold text-gray-800 mb-2">Welcome Back!</h1>
+      <p className="text-gray-500 mb-6 text-center">Login to continue</p>
+
+      {serverError && <p className="text-red-500 text-sm mb-3">{serverError}</p>}
 
       <div className="w-full mb-4">
-        <label className="block text-yellow-700 font-semibold mb-1">Full Name</label>
+        <label htmlFor="username" className="block text-gray-700 font-semibold mb-1">
+          Username
+        </label>
         <input
+          id="username"
           type="text"
-          placeholder="Enter your full name"
-          value={form.fullName}
-          onChange={(e) => setForm({ ...form, fullName: e.target.value })}
-          className="w-full px-4 py-2 border border-yellow-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 text-black"
+          placeholder="Enter your username"
+          className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
+          {...register("username")}
         />
-      </div>
-
-      <div className="w-full mb-4">
-        <label className="block text-yellow-700 font-semibold mb-1">Mobile Number</label>
-        <input
-          type="text"
-          placeholder="Enter your mobile number"
-          value={form.mobile}
-          onChange={(e) => setForm({ ...form, mobile: e.target.value })}
-          className="w-full px-4 py-2 border border-yellow-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 text-black"
-        />
-      </div>
-
-      <div className="w-full mb-4">
-        <label className="block text-yellow-700 font-semibold mb-1">Email</label>
-        <input
-          type="email"
-          placeholder="Enter your email"
-          value={form.email}
-          onChange={(e) => setForm({ ...form, email: e.target.value })}
-          className="w-full px-4 py-2 border border-yellow-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 text-black"
-        />
-      </div>
-
-      <div className="w-full mb-4">
-        <label className="block text-yellow-700 font-semibold mb-1">Password</label>
-        <input
-          type="password"
-          placeholder="Enter your password"
-          value={form.password}
-          onChange={(e) => setForm({ ...form, password: e.target.value })}
-          className="w-full px-4 py-2 border border-yellow-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 text-black"
-        />
+        {errors.username && (
+          <p className="text-xs text-red-500 mt-1">{errors.username.message}</p>
+        )}
       </div>
 
       <div className="w-full mb-2">
-        <label className="block text-yellow-700 font-semibold mb-1">Confirm Password</label>
+        <label htmlFor="password" className="block text-gray-700 font-semibold mb-1">
+          Password
+        </label>
         <input
+          id="password"
           type="password"
-          placeholder="Confirm your password"
-          value={form.confirmPassword}
-          onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
-          className="w-full px-4 py-2 border border-yellow-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 text-black"
+          placeholder="Enter your password"
+          className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
+          {...register("password")}
         />
+        {errors.password && (
+          <p className="text-xs text-red-500 mt-1">{errors.password.message}</p>
+        )}
       </div>
 
-      {error && <p className="text-red-500 text-sm mb-3 self-start">{error}</p>}
+      <div className="w-full flex justify-end mb-3">
+        <Link href="/forgot-password" className="text-sm text-blue-500 hover:underline">
+          Forgot Password?
+        </Link>
+      </div>
 
       <button
-        onClick={handleSubmit}
-        className="w-full py-2 mb-4 rounded-xl bg-yellow-500 hover:bg-yellow-600 text-white font-semibold shadow-md transition-all"
+        onClick={handleSubmit(submit)}
+        className="w-full py-2 mb-4 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold shadow-md transition-all disabled:opacity-60"
+        disabled={isSubmitting || pending}
       >
-        Register
+        {isSubmitting || pending ? "Logging in..." : "Log In"}
       </button>
 
-      <p className="text-sm text-yellow-800 mt-4 text-center">
-        Already have an account?{" "}
-        <Link href="/login" className="text-yellow-600 font-semibold hover:underline">
-          Log in
+      <div className="flex items-center w-full my-3">
+        <hr className="flex-grow border-gray-300" />
+        <span className="mx-2 text-gray-400">OR</span>
+        <hr className="flex-grow border-gray-300" />
+      </div>
+
+      <button
+        type="button"
+        className="w-full py-2 mb-4 rounded-xl border border-gray-300 flex items-center justify-center gap-2 hover:bg-gray-100 transition-all"
+      >
+        <SiGoogle className="text-red-500" /> Login with Google
+      </button>
+
+      <p className="text-sm text-gray-500 mt-6 text-center">
+        Don’t have an account?{" "}
+        <Link href="/register" className="text-blue-500 hover:underline font-semibold">
+          Sign Up
         </Link>
       </p>
     </div>
