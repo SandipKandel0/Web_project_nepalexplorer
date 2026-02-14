@@ -44,14 +44,25 @@ try {
     const response = await login(data);
     if (response.success) {
 
-
     if (response.data.token) await setAuthToken(response.data.token);
     if (response.data) await setUserData(response.data);
+
+    // Determine redirect based on role
+    const user = response.data.user;
+    const userRole = user?.role;
+    let redirectUrl = "/user/dashboard"; // default
+    
+    if (userRole === "guide") {
+      redirectUrl = "/guide/dashboard";
+    } else if (userRole === "admin") {
+      redirectUrl = "/admin/users";
+    }
 
     return {
         success: true,
         message: "Login successful",
         data: response.data,
+        redirectUrl,
     };
     }
 

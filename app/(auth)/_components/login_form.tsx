@@ -29,8 +29,9 @@ export default function LoginForm() {
           throw new Error(response.message);
         }
 
-        // Successful login, redirect to dashboard
-        window.location.href = "/user/dashboard"; // keep UI same
+        // Successful login, redirect based on role
+        const redirectUrl = response.redirectUrl || "/user/dashboard";
+        window.location.href = redirectUrl;
       } catch (err: any) {
         setError(err.message || "Login failed");
       }
@@ -80,16 +81,16 @@ export default function LoginForm() {
 
       <button
         onClick={handleSubmit}
-        className="w-full py-2 mb-4 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold shadow-md transition-all"
+        className="w-full py-2 mb-4 rounded-xl bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold shadow-md transition-all"
         disabled={pending}
       >
         {pending ? "Logging in..." : "Log In"}
       </button>
 
       <div className="flex items-center w-full my-3">
-        <hr className="flex-grow border-gray-300" />
+        <hr className="grow border-gray-300" />
         <span className="mx-2 text-gray-400">OR</span>
-        <hr className="flex-grow border-gray-300" />
+        <hr className="grow border-gray-300" />
       </div>
 
       <button

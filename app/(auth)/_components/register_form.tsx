@@ -105,6 +105,25 @@ export default function RegisterForm() {
         )}
       </div>
 
+      {/* Are you a Guide Toggle */}
+      <div className="w-full mb-4 flex items-center gap-3 bg-yellow-50 p-4 rounded-xl border border-yellow-200">
+        <label className="text-yellow-700 font-semibold flex-1">
+          Are you a Guide?
+        </label>
+        <div className="relative inline-flex items-center">
+          <input
+            type="checkbox"
+            className="sr-only peer"
+            {...register("isGuide")}
+            id="isGuide"
+          />
+          <label
+            htmlFor="isGuide"
+            className="relative w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-yellow-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-500 cursor-pointer"
+          ></label>
+        </div>
+      </div>
+
       {/* Password */}
       <div className="w-full mb-4">
         <label className="block text-yellow-700 font-semibold mb-1">Password</label>

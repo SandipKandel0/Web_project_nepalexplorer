@@ -13,6 +13,7 @@ export const registerSchema = z.object({
   phoneNumber: z.string().min(10, "Invalid phone number"),
   password: z.string().min(6, "Minimum 6 characters"),
   confirmPassword: z.string().min(6, "Minimum 6 characters"),
+  isGuide: z.boolean().optional().default(false),
 }).refine((v) => v.password === v.confirmPassword, {
   path: ["confirmPassword"],
   message: "Passwords do not match",
