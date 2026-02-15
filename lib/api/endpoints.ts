@@ -1,3 +1,25 @@
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5050/api";
+
+// User endpoints
+export const USER_ENDPOINTS = {
+  REGISTER: `${API_BASE_URL}/user/register`,
+  LOGIN: `${API_BASE_URL}/user/login`,
+  GET_PROFILE: (id: string) => `${API_BASE_URL}/user/${id}`,
+  UPDATE_PROFILE: (id: string) => `${API_BASE_URL}/user/${id}`,
+  ADD_FAVOURITE: `${API_BASE_URL}/user/favourite/add`,
+  REMOVE_FAVOURITE: `${API_BASE_URL}/user/favourite/remove`,
+  GET_FAVOURITES: (userId: string) => `${API_BASE_URL}/user/${userId}/favourites`,
+};
+
+// Guide endpoints
+export const GUIDE_ENDPOINTS = {
+  REGISTER: `${API_BASE_URL}/guide/register`,
+  LOGIN: `${API_BASE_URL}/guide/login`,
+  GET_ALL: `${API_BASE_URL}/guide`,
+  GET_PROFILE: (id: string) => `${API_BASE_URL}/guide/${id}`,
+  UPDATE_PROFILE: (id: string) => `${API_BASE_URL}/guide/${id}`,
+};
+
 // ALL API Endpoints
 
 export const API = {
