@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { authAPI } from "@/lib/api/auth";
+import { setAuthToken, setUserData } from "@/lib/cookies";
 
 export default function UserLoginPage() {
   const router = useRouter();
@@ -36,8 +37,16 @@ export default function UserLoginPage() {
       const response = await authAPI.loginUser(formData);
 
       if (response.success) {
+        const userData = { ...response.data, role: "user" };
+        
+        // Store token and data in localStorage
         authAPI.setToken(response.data.token, "user");
-        localStorage.setItem("user_data", JSON.stringify(response.data));
+        localStorage.setItem("user_data", JSON.stringify(userData));
+        
+        // Also set cookies for server-side middleware
+        await setAuthToken(response.data.token);
+        await setUserData(userData);
+        
         alert("Login successful!");
         router.push("/user/dashboard");
       }

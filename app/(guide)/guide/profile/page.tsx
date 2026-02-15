@@ -2,20 +2,23 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getUserData } from "@/lib/cookies";
+import Link from "next/link";
 
 interface GuideProfile {
   _id: string;
   fullName: string;
   email: string;
-  phoneNumber: string;
-  username: string;
-  imageUrl?: string;
-  role: string;
+  phone: string;
+  language: string;
+  experience: string;
+  city: string;
+  bio?: string;
+  profileImage?: string;
+  rating?: number;
   createdAt: string;
 }
 
-export default function GuideProfil() {
+export default function GuideProfile() {
   const [profile, setProfile] = useState<GuideProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -23,26 +26,23 @@ export default function GuideProfil() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const userData = await getUserData();
-        if (userData) {
-          setProfile(userData as unknown as GuideProfile);
+        const guideData = localStorage.getItem("guide_data");
+        if (guideData) {
+          const parsed = JSON.parse(guideData);
+          setProfile(parsed);
+        } else {
+          router.push("/login/guide");
         }
       } catch (error) {
         console.error("Failed to load profile:", error);
+        router.push("/login/guide");
       } finally {
         setLoading(false);
       }
     };
 
     fetchProfile();
-  }, []);
-
-  const handleLogout = () => {
-    // Clear cookies and redirect to login
-    document.cookie = "authToken=; max-age=0;";
-    document.cookie = "userData=; max-age=0;";
-    router.push("/login");
-  };
+  }, [router]);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -55,7 +55,7 @@ export default function GuideProfil() {
   if (loading) {
     return (
       <div className="flex justify-center items-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600"></div>
       </div>
     );
   }
@@ -69,34 +69,116 @@ export default function GuideProfil() {
   }
 
   return (
-    <div className="max-w-2xl">
-      <div className="bg-white rounded-lg shadow-lg p-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-800">My Profile</h1>
-          <p className="text-gray-600 mt-2">Guide Account Details</p>
-        </div>
+    <div className="max-w-4xl mx-auto space-y-6">
+      {/* Profile Card */}
+      <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+        {/* Header Background */}
+        <div className="h-32 bg-gradient-to-r from-orange-400 to-orange-600"></div>
 
-        {/* Profile Image */}
-        <div className="mb-8 flex justify-center">
-          <div className="relative">
-            {profile.imageUrl ? (
-              <img
-                src={profile.imageUrl}
-                alt={profile.fullName}
-                className="w-32 h-32 rounded-full object-cover border-4 border-blue-600"
-              />
-            ) : (
-              <div className="w-32 h-32 rounded-full bg-linear-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-4xl font-bold">
-                {profile.fullName
-                  .split(" ")
-                  .map((n) => n[0])
-                  .join("")
-                  .toUpperCase()}
+        {/* Profile Content */}
+        <div className="px-6 pb-6">
+          {/* Profile Image and Name */}
+          <div className="flex flex-col items-center -mt-16 mb-6">
+            <div className="relative">
+              {profile.profileImage ? (
+                <img
+                  src={profile.profileImage}
+                  alt={profile.fullName}
+                  className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg"
+                />
+              ) : (
+                <div className="w-32 h-32 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white text-5xl font-bold border-4 border-white shadow-lg">
+                  {profile.fullName
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")
+                    .toUpperCase()}
+                </div>
+              )}
+            </div>
+            <h1 className="text-3xl font-bold text-gray-800 mt-4">
+              {profile.fullName}
+            </h1>
+            <p className="text-orange-600 font-semibold mt-1">Professional Guide</p>
+          </div>
+
+          {/* Guide Info Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-8 border-t border-gray-200">
+            {/* Contact Information */}
+            <div>
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                Contact Information
+              </h3>
+              <div className="space-y-3">
+                <div>
+                  <label className="text-sm font-medium text-gray-600">Email</label>
+                  <p className="text-gray-800">{profile.email}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-600">Phone</label>
+                  <p className="text-gray-800">{profile.phone}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-600">City</label>
+                  <p className="text-gray-800">{profile.city}</p>
+                </div>
               </div>
-            )}
+            </div>
+
+            {/* Professional Information */}
+            <div>
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                Professional Information
+              </h3>
+              <div className="space-y-3">
+                <div>
+                  <label className="text-sm font-medium text-gray-600">Language</label>
+                  <p className="text-gray-800">{profile.language}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-600">Experience</label>
+                  <p className="text-gray-800">{profile.experience} years</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-600">Rating</label>
+                  <p className="text-gray-800">
+                    {profile.rating ? `${profile.rating} ⭐` : "No ratings yet"}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Bio Section */}
+          {profile.bio && (
+            <div className="py-6 border-t border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-800 mb-3">Bio</h3>
+              <p className="text-gray-700">{profile.bio}</p>
+            </div>
+          )}
+
+          {/* Member Since */}
+          <div className="py-6 border-t border-gray-200 text-center">
+            <p className="text-sm text-gray-600">
+              Member since {formatDate(profile.createdAt)}
+            </p>
           </div>
         </div>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="bg-white rounded-lg shadow p-6 text-center">
+        <p className="text-gray-600 mb-4">Profile information is read-only</p>
+        <Link
+          href="/guide/dashboard"
+          className="inline-block bg-orange-600 hover:bg-orange-700 text-white font-semibold py-2 px-6 rounded-lg transition"
+        >
+          ← Back to Dashboard
+        </Link>
+      </div>
+    </div>
+  );
+}
 
         {/* Profile Information */}
         <div className="space-y-6">
