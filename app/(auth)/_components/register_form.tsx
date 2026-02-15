@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema } from "../schema";
 import { handleRegister } from "@/lib/actions/auth-action";
@@ -14,10 +14,21 @@ export default function RegisterForm() {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors, isSubmitting },
+    control,
   } = useForm({
     resolver: zodResolver(registerSchema),
     mode: "onSubmit",
+    defaultValues: {
+      isGuide: false,
+    },
+  });
+
+  // Watch the isGuide field to show/hide guide-specific fields
+  const isGuide = useWatch({
+    control,
+    name: "isGuide",
   });
 
   const submit = async (values: any) => {
@@ -123,6 +134,57 @@ export default function RegisterForm() {
           ></label>
         </div>
       </div>
+
+      {/* Conditional Guide Fields */}
+      {isGuide && (
+        <>
+          {/* City */}
+          <div className="w-full mb-4">
+            <label className="block text-yellow-700 font-semibold mb-1">City</label>
+            <input
+              type="text"
+              placeholder="Your city"
+              className="w-full px-4 py-2 border border-yellow-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 text-black"
+              {...register("city")}
+            />
+            {errors.city && (
+              <p className="text-xs text-red-500 mt-1">{errors.city.message}</p>
+            )}
+          </div>
+
+          {/* Language */}
+          <div className="w-full mb-4">
+            <label className="block text-yellow-700 font-semibold mb-1">Language</label>
+            <input
+              type="text"
+              placeholder="e.g., English, Nepali, Hindi"
+              className="w-full px-4 py-2 border border-yellow-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 text-black"
+              {...register("language")}
+            />
+            {errors.language && (
+              <p className="text-xs text-red-500 mt-1">{errors.language.message}</p>
+            )}
+          </div>
+
+          {/* Experience */}
+          <div className="w-full mb-4">
+            <label className="block text-yellow-700 font-semibold mb-1">Experience</label>
+            <select
+              className="w-full px-4 py-2 border border-yellow-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 text-black"
+              {...register("experience")}
+            >
+              <option value="">Select experience level</option>
+              <option value="1-3">1-3 years</option>
+              <option value="3-5">3-5 years</option>
+              <option value="5-10">5-10 years</option>
+              <option value="10+">10+ years</option>
+            </select>
+            {errors.experience && (
+              <p className="text-xs text-red-500 mt-1">{errors.experience.message}</p>
+            )}
+          </div>
+        </>
+      )}
 
       {/* Password */}
       <div className="w-full mb-4">

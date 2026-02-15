@@ -68,8 +68,8 @@ export default function GuideRegisterPage() {
         router.push("/guide/dashboard");
       }
     } catch (err: any) {
-      console.error(err);
-      setError(err.response?.data?.message || "Registration failed. Please try again.");
+      console.error("Registration error:", err);
+      setError(err.response?.data?.message || err.response?.data?.error || err.message || "Registration failed. Please try again.");
     } finally {
       setLoading(false);
     }
