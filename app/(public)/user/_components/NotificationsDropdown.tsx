@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { getNotifications, markNotificationAsRead, deleteNotification } from "@/lib/api/guide";
-import { MdNotifications, MdClose } from "react-icons/md";
+import { MdNotifications, MdClose, MdLogout } from "react-icons/md";
 
 export default function NotificationsDropdown() {
+  const router = useRouter();
   const [notifications, setNotifications] = useState<any[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -53,6 +55,18 @@ export default function NotificationsDropdown() {
     } catch (err) {
       console.error("Failed to delete notification");
     }
+  };
+
+  const handleLogout = () => {
+    // Clear all user data from localStorage
+    localStorage.removeItem("user_data");
+    localStorage.removeItem("guide_data");
+    localStorage.removeItem("user_token");
+    localStorage.removeItem("guide_token");
+    localStorage.removeItem("favorite_destinations");
+    
+    // Redirect to login page
+    router.push("/login/user");
   };
 
   return (
@@ -128,13 +142,24 @@ export default function NotificationsDropdown() {
           </div>
 
           {/* Footer */}
-          {notifications.length > 0 && (
-            <div className="border-t p-3 text-center">
-              <button className="text-blue-600 hover:text-blue-800 text-sm font-semibold">
-                View All Notifications
+          <div className="border-t">
+            {notifications.length > 0 && (
+              <div className="p-3 text-center border-b">
+                <button className="text-blue-600 hover:text-blue-800 text-sm font-semibold">
+                  View All Notifications
+                </button>
+              </div>
+            )}
+            <div className="p-3">
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg transition"
+              >
+                <MdLogout size={18} />
+                Logout
               </button>
             </div>
-          )}
+          </div>
         </div>
       )}
     </div>

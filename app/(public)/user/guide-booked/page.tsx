@@ -11,13 +11,16 @@ function GuideBookedForm() {
   const destinationParam = searchParams.get("destination");
 
   const [form, setForm] = useState({
-    tripDate: "",
-    duration: 1,
+    name: "",
+    email: "",
+    phone: "",
+    destination: destinationParam || "",
+    bookingDate: "",
+    tripDuration: 1,
     location: destinationParam || "",
-    description: "",
-    budget: 0,
     numberOfPeople: 1,
-    guideId: "",
+    language: "",
+    customMessage: "",
   });
 
   const [user, setUser] = useState<any>(null);
@@ -29,13 +32,25 @@ function GuideBookedForm() {
   useEffect(() => {
     const userData = localStorage.getItem("user_data");
     if (userData) {
-      setUser(JSON.parse(userData));
+      const parsedUser = JSON.parse(userData);
+      setUser(parsedUser);
+      // Pre-fill form with user data
+      setForm((prev) => ({
+        ...prev,
+        name: parsedUser.fullName || "",
+        email: parsedUser.email || "",
+        phone: parsedUser.phone || parsedUser.phoneNumber || "",
+      }));
     }
   }, []);
 
   useEffect(() => {
     if (destinationParam) {
-      setForm((prev) => ({ ...prev, location: destinationParam }));
+      setForm((prev) => ({ 
+        ...prev, 
+        destination: destinationParam,
+        location: destinationParam 
+      }));
     }
   }, [destinationParam]);
 
@@ -46,11 +61,13 @@ function GuideBookedForm() {
 
     // Validate form
     if (
-      !form.tripDate ||
+      !form.name ||
+      !form.email ||
+      !form.phone ||
+      !form.bookingDate ||
       !form.location ||
-      !form.description ||
-      !form.budget ||
-      !form.guideId
+      !form.language ||
+      !form.customMessage
     ) {
       setError("Please fill in all required fields");
       return;
@@ -60,10 +77,15 @@ function GuideBookedForm() {
       setSubmitting(true);
 
       const guideRequestData = {
-        ...form,
-        tripDate: new Date(form.tripDate).toISOString(),
-        guideId: form.guideId,
-        guestName: user?.fullName || "Guest",
+        guestName: form.name,
+        guestEmail: form.email,
+        guestPhone: form.phone,
+        tripDate: form.bookingDate,
+        duration: form.tripDuration,
+        location: form.location,
+        numberOfPeople: form.numberOfPeople,
+        language: form.language,
+        customMessage: form.customMessage,
       };
 
       const response = await createGuideRequest(guideRequestData);
@@ -71,13 +93,16 @@ function GuideBookedForm() {
       if (response.success) {
         setSuccess("Guide request sent successfully!");
         setForm({
-          tripDate: "",
-          duration: 1,
+          name: user?.fullName || "",
+          email: user?.email || "",
+          phone: user?.phone || user?.phoneNumber || "",
+          destination: "",
+          bookingDate: "",
+          tripDuration: 1,
           location: "",
-          description: "",
-          budget: 0,
           numberOfPeople: 1,
-          guideId: "",
+          language: "",
+          customMessage: "",
         });
 
         // Redirect after delay
@@ -122,50 +147,92 @@ function GuideBookedForm() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Guide ID */}
+          {/* Name */}
           <div>
             <label className="block text-gray-700 font-semibold mb-2">
-              Select Guide ID *
+              Full Name *
             </label>
             <input
               type="text"
-              value={form.guideId}
-              onChange={(e) => setForm({ ...form, guideId: e.target.value })}
-              placeholder="Enter guide ID"
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              placeholder="Enter your full name"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
-            <p className="text-sm text-gray-500 mt-1">
-              Browse available guides to find their ID
-            </p>
           </div>
 
-          {/* Trip Date */}
+          {/* Email */}
           <div>
             <label className="block text-gray-700 font-semibold mb-2">
-              Trip Date *
+              Email Address *
             </label>
             <input
-              type="datetime-local"
-              value={form.tripDate}
-              onChange={(e) => setForm({ ...form, tripDate: e.target.value })}
+              type="email"
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              placeholder="Enter your email"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+
+          {/* Phone */}
+          <div>
+            <label className="block text-gray-700 font-semibold mb-2">
+              Phone Number *
+            </label>
+            <input
+              type="tel"
+              value={form.phone}
+              onChange={(e) => setForm({ ...form, phone: e.target.value })}
+              placeholder="Enter your phone number"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+
+          {/* Destination */}
+          <div>
+            <label className="block text-gray-700 font-semibold mb-2">
+              Destination *
+            </label>
+            <input
+              type="text"
+              value={form.location}
+              onChange={(e) => setForm({ ...form, location: e.target.value })}
+              placeholder="e.g., Kathmandu, Pokhara, Everest Base Camp"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+
+          {/* Booking Date */}
+          <div>
+            <label className="block text-gray-700 font-semibold mb-2">
+              Booking Date *
+            </label>
+            <input
+              type="date"
+              value={form.bookingDate}
+              onChange={(e) => setForm({ ...form, bookingDate: e.target.value })}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Duration */}
+            {/* Trip Duration */}
             <div>
               <label className="block text-gray-700 font-semibold mb-2">
-                Duration (days) *
+                Trip Duration (days) *
               </label>
               <input
                 type="number"
                 min="1"
-                value={form.duration}
+                value={form.tripDuration}
                 onChange={(e) =>
-                  setForm({ ...form, duration: parseInt(e.target.value) })
+                  setForm({ ...form, tripDuration: parseInt(e.target.value) || 1 })
                 }
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
@@ -182,7 +249,7 @@ function GuideBookedForm() {
                 min="1"
                 value={form.numberOfPeople}
                 onChange={(e) =>
-                  setForm({ ...form, numberOfPeople: parseInt(e.target.value) })
+                  setForm({ ...form, numberOfPeople: parseInt(e.target.value) || 1 })
                 }
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
@@ -190,48 +257,30 @@ function GuideBookedForm() {
             </div>
           </div>
 
-          {/* Location */}
+          {/* Language */}
           <div>
             <label className="block text-gray-700 font-semibold mb-2">
-              Destination *
+              Preferred Language *
             </label>
             <input
               type="text"
-              value={form.location}
-              onChange={(e) => setForm({ ...form, location: e.target.value })}
-              placeholder="e.g., Kathmandu, Pokhara, Everest Base Camp"
+              value={form.language}
+              onChange={(e) => setForm({ ...form, language: e.target.value })}
+              placeholder="e.g., English, Nepali, Hindi"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
 
-          {/* Budget */}
+          {/* Custom Message */}
           <div>
             <label className="block text-gray-700 font-semibold mb-2">
-              Budget (per day in USD) *
-            </label>
-            <input
-              type="number"
-              min="1"
-              value={form.budget}
-              onChange={(e) =>
-                setForm({ ...form, budget: parseFloat(e.target.value) })
-              }
-              placeholder="e.g., 100"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-
-          {/* Description */}
-          <div>
-            <label className="block text-gray-700 font-semibold mb-2">
-              Trip Description *
+              Custom Message *
             </label>
             <textarea
-              value={form.description}
-              onChange={(e) => setForm({ ...form, description: e.target.value })}
-              placeholder="Describe your trip, interests, and expectations..."
+              value={form.customMessage}
+              onChange={(e) => setForm({ ...form, customMessage: e.target.value })}
+              placeholder="Tell us about your trip, interests, special requirements, and expectations..."
               rows={5}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required

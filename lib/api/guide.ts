@@ -1,12 +1,19 @@
 // GUIDE BOOKING & NOTIFICATION API CALLS
 import { API } from "./endpoints";
 import axiosInstance from "./axios";
-import { getAuthToken } from "../cookies";
+
+// Helper to get token from localStorage
+const getToken = () => {
+  if (typeof window !== "undefined") {
+    return localStorage.getItem("user_token") || localStorage.getItem("guide_token");
+  }
+  return null;
+};
 
 // Guide Requests
 export const createGuideRequest = async (guideRequestData: any) => {
   try {
-    const token = await getAuthToken();
+    const token = getToken();
     const response = await axiosInstance.post(
       API.GUIDE.CREATE_REQUEST,
       guideRequestData,
@@ -28,7 +35,7 @@ export const createGuideRequest = async (guideRequestData: any) => {
 
 export const getMyGuideRequests = async () => {
   try {
-    const token = await getAuthToken();
+    const token = getToken();
     const response = await axiosInstance.get(
       API.GUIDE.GET_MY_GUIDE_REQUESTS,
       {
@@ -49,7 +56,7 @@ export const getMyGuideRequests = async () => {
 
 export const getGuideRequests = async () => {
   try {
-    const token = await getAuthToken();
+    const token = getToken();
     const response = await axiosInstance.get(
       API.GUIDE.GET_MY_GUIDE_REQUESTS,
       {
@@ -70,7 +77,7 @@ export const getGuideRequests = async () => {
 
 export const getMyRequestedGuides = async () => {
   try {
-    const token = await getAuthToken();
+    const token = getToken();
     const response = await axiosInstance.get(
       API.GUIDE.GET_MY_REQUESTED_GUIDES,
       {
@@ -91,7 +98,7 @@ export const getMyRequestedGuides = async () => {
 
 export const getGuideRequest = async (id: string) => {
   try {
-    const token = await getAuthToken();
+    const token = getToken();
     const response = await axiosInstance.get(
       API.GUIDE.GET_REQUEST.replace(":id", id),
       {
@@ -112,7 +119,7 @@ export const getGuideRequest = async (id: string) => {
 
 export const approveGuideRequest = async (id: string) => {
   try {
-    const token = await getAuthToken();
+    const token = getToken();
     const response = await axiosInstance.put(
       API.GUIDE.APPROVE_REQUEST.replace(":id", id),
       {},
@@ -134,7 +141,7 @@ export const approveGuideRequest = async (id: string) => {
 
 export const declineGuideRequest = async (id: string) => {
   try {
-    const token = await getAuthToken();
+    const token = getToken();
     const response = await axiosInstance.put(
       API.GUIDE.DECLINE_REQUEST.replace(":id", id),
       {},
@@ -156,7 +163,7 @@ export const declineGuideRequest = async (id: string) => {
 
 export const deleteGuideRequest = async (id: string) => {
   try {
-    const token = await getAuthToken();
+    const token = getToken();
     const response = await axiosInstance.delete(
       API.GUIDE.DELETE_REQUEST.replace(":id", id),
       {
@@ -178,7 +185,7 @@ export const deleteGuideRequest = async (id: string) => {
 // Notifications
 export const getNotifications = async () => {
   try {
-    const token = await getAuthToken();
+    const token = getToken();
     const response = await axiosInstance.get(
       API.NOTIFICATION.GET_NOTIFICATIONS,
       {
@@ -199,7 +206,7 @@ export const getNotifications = async () => {
 
 export const getUnreadCount = async () => {
   try {
-    const token = await getAuthToken();
+    const token = getToken();
     const response = await axiosInstance.get(
       API.NOTIFICATION.GET_UNREAD_COUNT,
       {
@@ -220,7 +227,7 @@ export const getUnreadCount = async () => {
 
 export const markNotificationAsRead = async (id: string) => {
   try {
-    const token = await getAuthToken();
+    const token = getToken();
     const response = await axiosInstance.put(
       API.NOTIFICATION.MARK_AS_READ.replace(":id", id),
       {},
@@ -242,7 +249,7 @@ export const markNotificationAsRead = async (id: string) => {
 
 export const markAllNotificationsAsRead = async () => {
   try {
-    const token = await getAuthToken();
+    const token = getToken();
     const response = await axiosInstance.put(
       API.NOTIFICATION.MARK_ALL_READ,
       {},
@@ -264,7 +271,7 @@ export const markAllNotificationsAsRead = async () => {
 
 export const deleteNotification = async (id: string) => {
   try {
-    const token = await getAuthToken();
+    const token = getToken();
     const response = await axiosInstance.delete(
       API.NOTIFICATION.DELETE_NOTIFICATION.replace(":id", id),
       {
