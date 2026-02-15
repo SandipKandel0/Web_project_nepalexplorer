@@ -1,165 +1,116 @@
 "use client";
 
 import { useState } from "react";
-import { useTransition } from "react";
-import { loginSchema } from "../../schema";
-import { handleLogin } from "@/lib/actions/auth-action";
-import Link from "next/link";
-import { SiGoogle } from "react-icons/si";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { authAPI } from "@/lib/api/auth";
 
 export default function UserLoginPage() {
-  const [form, setForm] = useState({ email: "", password: "" });
-  const [error, setError] = useState("");
-  const [pending, setTransition] = useTransition();
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
 
-  const handleSubmit = async () => {
-    // Validate using Zod
-    const result = loginSchema.safeParse(form);
-    if (!result.success) {
-      setError(result.error.issues[0].message);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+
+    if (!formData.email || !formData.password) {
+      setError("Email and password are required");
       return;
     }
 
-    setError("");
+    try {
+      setLoading(true);
+      const response = await authAPI.loginUser(formData);
 
-    setTransition(async () => {
-      try {
-        const response = await handleLogin(form);
-
-        if (!response.success) {
-          throw new Error(response.message);
-        }
-
-        // Verify it's a user/guest login (not guide or admin)
-        const user = response.data?.user;
-        if (user?.role === "guide" || user?.role === "admin") {
-          setError(
-            `This account is registered as a ${user.role}. Please use the ${user.role} login page.`
-          );
-          return;
-        }
-
-        // Successful login, redirect to user dashboard
-        window.location.href = "/user/dashboard";
-      } catch (err: any) {
-        setError(err.message || "Login failed");
+      if (response.success) {
+        authAPI.setToken(response.data.token, "user");
+        localStorage.setItem("user_data", JSON.stringify(response.data));
+        alert("Login successful!");
+        router.push("/user/dashboard");
       }
-    });
+    } catch (err: any) {
+      console.error(err);
+      setError(err.response?.data?.message || "Login failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
-      <div className="bg-white rounded-3xl shadow-2xl flex flex-col md:flex-row w-full max-w-5xl overflow-hidden">
-        {/* Left Side: Login Form */}
-        <div className="w-full md:w-1/2 p-10 flex flex-col items-center justify-center bg-white">
-          <div className="w-full max-w-md flex flex-col items-center">
-            <div className="text-5xl mb-4">👤</div>
-            <h1 className="text-3xl font-extrabold text-gray-800 mb-2">
-              Guest Login
-            </h1>
-            <p className="text-gray-500 mb-6 text-center">
-              Book amazing guides for your adventures
-            </p>
-
-            <div className="w-full mb-4">
-              <label htmlFor="email" className="block text-gray-700 font-semibold mb-1">
-                Email
-              </label>
-              <input
-                id="email"
-                type="text"
-                placeholder="Enter your email"
-                className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
-              />
-            </div>
-
-            <div className="w-full mb-2">
-              <label htmlFor="password" className="block text-gray-700 font-semibold mb-1">
-                Password
-              </label>
-              <input
-                id="password"
-                type="password"
-                placeholder="Enter your password"
-                className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
-                onChange={(e) => setForm({ ...form, password: e.target.value })}
-              />
-            </div>
-
-            <div className="w-full flex justify-end mb-3">
-              <a href="/forgot-password" className="text-sm text-blue-500 hover:underline">
-                Forgot Password?
-              </a>
-            </div>
-
-            {error && <p className="text-red-500 text-sm mb-3 self-start">{error}</p>}
-
-            <button
-              onClick={handleSubmit}
-              className="w-full py-2 mb-4 rounded-xl bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold shadow-md transition-all"
-              disabled={pending}
-            >
-              {pending ? "Logging in..." : "Log In"}
-            </button>
-
-            <div className="flex items-center w-full my-3">
-              <hr className="grow border-gray-300" />
-              <span className="mx-2 text-gray-400">OR</span>
-              <hr className="grow border-gray-300" />
-            </div>
-
-            <button
-              type="button"
-              className="w-full py-2 mb-4 rounded-xl border border-gray-300 flex items-center justify-center gap-2 hover:bg-gray-100 transition-all"
-            >
-              <SiGoogle className="text-red-500" /> Login with Google
-            </button>
-
-            <div className="text-center text-sm text-gray-600">
-              Don't have an account?{" "}
-              <Link href="/register" className="text-blue-600 font-semibold hover:underline">
-                Sign up
-              </Link>
-            </div>
-
-            <div className="text-center text-sm text-gray-500 mt-4 pt-4 border-t border-gray-200 w-full">
-              <Link
-                href="/login"
-                className="text-gray-600 hover:text-gray-800 font-semibold"
-              >
-                ← Back to login selection
-              </Link>
-            </div>
-          </div>
+    <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-blue-50 flex items-center justify-center p-6">
+      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">Guest Login</h1>
+          <p className="text-gray-600">Sign in to your account</p>
         </div>
 
-        {/* Right Side: Hero / Image Section */}
-        <div className="w-full md:w-1/2 relative flex flex-col items-center justify-center p-10 bg-linear-to-br from-blue-100 to-blue-50">
-          <div className="absolute top-0 left-0 w-24 h-24 bg-blue-300 opacity-10 rounded-full -translate-x-1/2 -translate-y-1/2"></div>
+        {error && (
+          <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
+            {error}
+          </div>
+        )}
 
-          <h2 className="font-extrabold text-3xl md:text-4xl mb-6 text-center text-blue-900">
-            Find Your Perfect Guide
-          </h2>
-          <img
-            src="/image.jpeg"
-            alt="Nepal Guide Experience"
-            className="rounded-2xl shadow-xl object-cover w-72 h-48 md:w-96 md:h-64 border-4 border-white"
-          />
-
-          <div className="mt-8 bg-white bg-opacity-90 rounded-lg p-6 text-center">
-            <p className="text-blue-900 font-semibold mb-3">
-              ✨ Explore with confidence
-            </p>
-            <p className="text-gray-700 text-sm">
-              Connect with experienced local guides and make your trip unforgettable
-            </p>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">Email</label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="your@email.com"
+            />
           </div>
 
-          <div className="absolute bottom-0 right-0 w-32 h-32 bg-blue-300 opacity-10 rounded-full translate-x-1/3 translate-y-1/3"></div>
-        </div>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">Password</label>
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter your password"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-bold py-2 px-6 rounded-xl transition-colors mt-6"
+          >
+            {loading ? "Signing in..." : "Sign In"}
+          </button>
+        </form>
+
+        <p className="text-center text-gray-600 mt-6 text-sm">
+          Don't have an account?{" "}
+          <Link href="/register/user" className="text-blue-600 font-semibold hover:underline">
+            Register here
+          </Link>
+        </p>
+
+        <p className="text-center text-gray-600 mt-4">
+          <Link href="/login" className="text-gray-700 font-semibold hover:underline">
+            Back to login options
+          </Link>
+        </p>
       </div>
     </div>
   );
