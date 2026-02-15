@@ -130,3 +130,16 @@ export const register = async (data: any) => {
   }
 };
 
+// Update user profile
+export const updateProfile = async (userId: string, formData: FormData) => {
+  try {
+    const response = await axiosInstance.put(`/user/${userId}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || "Failed to update profile");
+  }
+};

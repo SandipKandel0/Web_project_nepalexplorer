@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import UserNavbar from "../_components/UserNavbar";
 import { authAPI } from "@/lib/api/auth";
 
 interface UserData {
@@ -42,10 +41,7 @@ export default function UserDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <UserNavbar />
-      
-      <div className="max-w-7xl mx-auto px-6 py-12">
+    <div>
         <div className="mb-12">
           <h1 className="text-4xl font-bold text-gray-800 mb-2">
             Welcome, {user.fullName}! 👋
@@ -83,6 +79,5 @@ export default function UserDashboard() {
           </div>
         </div>
       </div>
-    </div>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, useState } from "react";
+import { ReactNode, useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import NotificationsDropdown from "./_components/NotificationsDropdown";
@@ -8,6 +8,20 @@ import NotificationsDropdown from "./_components/NotificationsDropdown";
 export default function UserLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [userName, setUserName] = useState("Guest");
+
+  useEffect(() => {
+    // Get user data from localStorage
+    const userData = localStorage.getItem("user_data");
+    if (userData) {
+      try {
+        const user = JSON.parse(userData);
+        setUserName(user.fullName || user.username || "Guest");
+      } catch (e) {
+        console.error("Error parsing user data", e);
+      }
+    }
+  }, []);
 
   const isActive = (path: string) => pathname === path;
 
@@ -19,7 +33,7 @@ export default function UserLayout({ children }: { children: ReactNode }) {
           <div className="flex justify-between items-center">
             {/* Logo */}
             <Link href="/user/dashboard" className="flex items-center">
-              <h1 className="text-2xl font-bold text-blue-600">👤 Guest</h1>
+              <h1 className="text-2xl font-bold text-blue-600">👤 {userName}</h1>
             </Link>
 
             {/* Desktop Navigation */}

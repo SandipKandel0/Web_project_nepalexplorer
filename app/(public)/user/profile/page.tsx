@@ -73,22 +73,25 @@ export default function UserProfilePage() {
 
       const formData = new FormData();
       formData.append("fullName", form.fullName);
-      formData.append("username", form.username);
+      if (form.username) formData.append("username", form.username);
       formData.append("email", form.email);
-      formData.append("phoneNumber", form.phoneNumber);
+      formData.append("phone", form.phoneNumber); // Backend expects 'phone'
 
       if (imageFile) {
-        formData.append("image", imageFile);
+        formData.append("profileImage", imageFile); // Backend expects 'profileImage'
       }
 
-      const response = await updateProfile(user._id, formData);
+      const response = await updateProfile(user._id || user.id, formData);
       if (response.success) {
         setSuccess("Profile updated successfully!");
+        // Update localStorage with new user data
+        localStorage.setItem("user_data", JSON.stringify(response.data));
         // Update cookies with new user data
         await setUserData(response.data);
         setTimeout(() => {
-          router.refresh();
-        }, 1000);
+          setSuccess("");
+          window.location.reload();
+        }, 1500);
       }
     } catch (err: any) {
       setError(err.message || "Failed to update profile");
