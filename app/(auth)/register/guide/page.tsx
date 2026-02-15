@@ -59,9 +59,11 @@ export default function GuideRegisterPage() {
       });
 
       if (response.success) {
-        // Store token and guide data
+        // Store token and guide data with role
+        const guideData = { ...response.data, role: "guide" };
         authAPI.setToken(response.data.token, "guide");
-        localStorage.setItem("guide_data", JSON.stringify(response.data));
+        localStorage.setItem("guide_data", JSON.stringify(guideData));
+        localStorage.setItem("user_data", JSON.stringify(guideData)); // For unified access
         alert("Registration successful!");
         router.push("/guide/dashboard");
       }

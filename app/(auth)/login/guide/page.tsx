@@ -36,8 +36,11 @@ export default function GuideLoginPage() {
       const response = await authAPI.loginGuide(formData);
 
       if (response.success) {
+        // Add role to the data
+        const guideData = { ...response.data, role: "guide" };
         authAPI.setToken(response.data.token, "guide");
-        localStorage.setItem("guide_data", JSON.stringify(response.data));
+        localStorage.setItem("guide_data", JSON.stringify(guideData));
+        localStorage.setItem("user_data", JSON.stringify(guideData)); // For unified access
         alert("Login successful!");
         router.push("/guide/dashboard");
       }

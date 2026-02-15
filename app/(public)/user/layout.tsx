@@ -49,14 +49,24 @@ export default function UserLayout({ children }: { children: ReactNode }) {
                 🏠 Home
               </Link>
               <Link
-                href="/user/guide-booking"
+                href="/user/destinations"
                 className={`font-semibold transition-colors ${
-                  isActive("/user/guide-booking")
+                  isActive("/user/destinations")
                     ? "text-blue-600 border-b-2 border-blue-600"
                     : "text-gray-700 hover:text-blue-600"
                 }`}
               >
-                🌍 Destination
+                🗺️ Destinations
+              </Link>
+              <Link
+                href="/user/guide-booked"
+                className={`font-semibold transition-colors ${
+                  isActive("/user/guide-booked")
+                    ? "text-blue-600 border-b-2 border-blue-600"
+                    : "text-gray-700 hover:text-blue-600"
+                }`}
+              >
+                📋 Book Guide
               </Link>
               <Link
                 href="/user/favourite"
@@ -116,10 +126,16 @@ export default function UserLayout({ children }: { children: ReactNode }) {
                 🏠 Home
               </Link>
               <Link
-                href="/user/guide-booking"
+                href="/user/destinations"
                 className="block py-2 px-4 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded"
               >
-                🌍 Destination
+                🗺️ Destinations
+              </Link>
+              <Link
+                href="/user/guide-booked"
+                className="block py-2 px-4 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded"
+              >
+                📋 Book Guide
               </Link>
               <Link
                 href="/user/favourite"
