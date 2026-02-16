@@ -47,10 +47,15 @@ export const API = {
         DELETE_REQUEST: '/guide/requests/:id',
     },
     NOTIFICATION: {
-        GET_NOTIFICATIONS: '/guide/notifications',
-        GET_UNREAD_COUNT: '/guide/notifications/unread-count',
-        MARK_AS_READ: '/guide/notifications/:id/read',
-        MARK_ALL_READ: '/guide/notifications/mark-all-read',
-        DELETE_NOTIFICATION: '/guide/notifications/:id',
+        // Guide notifications
+        GUIDE_GET_NOTIFICATIONS: '/guide/notifications',
+        GUIDE_GET_UNREAD_COUNT: '/guide/notifications/unread-count',
+        GUIDE_MARK_AS_READ: '/guide/notifications/:id/read',
+        GUIDE_MARK_ALL_READ: '/guide/notifications/mark-all-read',
+        GUIDE_DELETE_NOTIFICATION: '/guide/notifications/:id',
+        // User notifications
+        USER_GET_NOTIFICATIONS: '/user/notifications',
+        USER_MARK_AS_READ: '/user/notifications/:id/read',
+        USER_DELETE_NOTIFICATION: '/user/notifications/:id',
     }
 }

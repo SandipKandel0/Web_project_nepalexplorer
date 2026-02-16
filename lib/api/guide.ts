@@ -2,7 +2,15 @@
 import { API } from "./endpoints";
 import axiosInstance from "./axios";
 
-// Helper to get token from localStorage
+// Helper to get guide token specifically
+const getGuideToken = () => {
+  if (typeof window !== "undefined") {
+    return localStorage.getItem("guide_token");
+  }
+  return null;
+};
+
+// Helper to get token from localStorage (user or guide)
 const getToken = () => {
   if (typeof window !== "undefined") {
     return localStorage.getItem("user_token") || localStorage.getItem("guide_token");
@@ -185,9 +193,9 @@ export const deleteGuideRequest = async (id: string) => {
 // Notifications
 export const getNotifications = async () => {
   try {
-    const token = getToken();
+    const token = getGuideToken();
     const response = await axiosInstance.get(
-      API.NOTIFICATION.GET_NOTIFICATIONS,
+      API.NOTIFICATION.GUIDE_GET_NOTIFICATIONS,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -206,9 +214,9 @@ export const getNotifications = async () => {
 
 export const getUnreadCount = async () => {
   try {
-    const token = getToken();
+    const token = getGuideToken();
     const response = await axiosInstance.get(
-      API.NOTIFICATION.GET_UNREAD_COUNT,
+      API.NOTIFICATION.GUIDE_GET_UNREAD_COUNT,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -227,9 +235,9 @@ export const getUnreadCount = async () => {
 
 export const markNotificationAsRead = async (id: string) => {
   try {
-    const token = getToken();
+    const token = getGuideToken();
     const response = await axiosInstance.put(
-      API.NOTIFICATION.MARK_AS_READ.replace(":id", id),
+      API.NOTIFICATION.GUIDE_MARK_AS_READ.replace(":id", id),
       {},
       {
         headers: {
@@ -249,9 +257,9 @@ export const markNotificationAsRead = async (id: string) => {
 
 export const markAllNotificationsAsRead = async () => {
   try {
-    const token = getToken();
+    const token = getGuideToken();
     const response = await axiosInstance.put(
-      API.NOTIFICATION.MARK_ALL_READ,
+      API.NOTIFICATION.GUIDE_MARK_ALL_READ,
       {},
       {
         headers: {
@@ -271,9 +279,9 @@ export const markAllNotificationsAsRead = async () => {
 
 export const deleteNotification = async (id: string) => {
   try {
-    const token = getToken();
+    const token = getGuideToken();
     const response = await axiosInstance.delete(
-      API.NOTIFICATION.DELETE_NOTIFICATION.replace(":id", id),
+      API.NOTIFICATION.GUIDE_DELETE_NOTIFICATION.replace(":id", id),
       {
         headers: {
           Authorization: `Bearer ${token}`,

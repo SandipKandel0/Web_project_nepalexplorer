@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { getNotifications, markNotificationAsRead, deleteNotification } from "@/lib/api/guide";
+import { userApi } from "@/lib/api/user";
 import { MdNotifications, MdClose, MdLogout } from "react-icons/md";
 
 export default function NotificationsDropdown() {
@@ -23,8 +23,8 @@ export default function NotificationsDropdown() {
   const fetchNotifications = async () => {
     try {
       setLoading(true);
-      const response = await getNotifications();
-      setNotifications(response.data);
+      const response = await userApi.getNotifications();
+      setNotifications(response.data || response || []);
       setError("");
     } catch (err: any) {
       setError(err.message || "Failed to fetch notifications");
@@ -36,7 +36,7 @@ export default function NotificationsDropdown() {
   const handleMarkAsRead = async (notificationId: string, e: React.MouseEvent) => {
     e.stopPropagation();
     try {
-      await markNotificationAsRead(notificationId);
+      await userApi.markNotificationAsRead(notificationId);
       setNotifications((prev) =>
         prev.map((n) =>
           n._id === notificationId ? { ...n, read: true } : n
@@ -50,7 +50,7 @@ export default function NotificationsDropdown() {
   const handleDelete = async (notificationId: string, e: React.MouseEvent) => {
     e.stopPropagation();
     try {
-      await deleteNotification(notificationId);
+      await userApi.deleteNotification(notificationId);
       setNotifications((prev) => prev.filter((n) => n._id !== notificationId));
     } catch (err) {
       console.error("Failed to delete notification");

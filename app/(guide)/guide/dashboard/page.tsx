@@ -114,27 +114,6 @@ export default function GuideDashboard() {
             </p>
           </div>
         </div>
-
-        {/* Quick Actions */}
-        <div>
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">
-            Quick Actions
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Link
-              href="/guide/requests"
-              className="bg-orange-600 hover:bg-orange-700 text-white py-3 px-4 rounded-lg font-semibold transition text-center"
-            >
-              View Booking Requests
-            </Link>
-            <Link
-              href="/guide/profile"
-              className="bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-semibold transition text-center"
-            >
-              View My Profile
-            </Link>
-          </div>
-        </div>
       </div>
 
       {/* Recent Activity */}
