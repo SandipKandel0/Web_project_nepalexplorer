@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getUserData, setUserData } from "@/lib/cookies";
 import { updateProfile } from "@/lib/api/auth";
-import Link from "next/link";
 
 export default function UserProfilePage() {
   const router = useRouter();
@@ -111,12 +110,6 @@ export default function UserProfilePage() {
       <div className="max-w-2xl mx-auto px-4">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold">My Profile</h1>
-          <Link
-            href={user.role === "admin" ? "/admin/users" : "/user/dashboard"}
-            className="text-blue-600 hover:text-blue-800"
-          >
-            ← Back
-          </Link>
         </div>
 
         <div className="bg-white rounded-lg shadow p-8">

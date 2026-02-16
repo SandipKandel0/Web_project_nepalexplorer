@@ -119,17 +119,8 @@ function GuideBookedForm() {
 
   return (
     <div>
-      <div className="mb-6">
-        <Link
-          href="/user/destinations"
-          className="text-blue-600 hover:text-blue-800 font-semibold"
-        >
-          ← Back to Destinations
-        </Link>
-      </div>
-
       <div className="bg-white rounded-lg shadow p-8 max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold mb-2">📋 Book a Guide</h1>
+        <h1 className="text-3xl font-bold mb-2">Book a Guide</h1>
         <p className="text-gray-600 mb-6">
           Fill in the details below to request a personal guide for your trip
         </p>
