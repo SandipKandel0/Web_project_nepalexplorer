@@ -33,11 +33,19 @@ export default function GuideRequestsPage() {
     try {
       setLoading(true);
       const data = await guideApi.getGuideRequests();
-      setRequests(data);
+      
+      // Ensure data is an array
+      if (Array.isArray(data)) {
+        setRequests(data);
+      } else {
+        console.error("Expected array but got:", data);
+        setRequests([]);
+      }
       setError(null);
     } catch (err) {
       setError("Failed to load booking requests");
       console.error(err);
+      setRequests([]);
     } finally {
       setLoading(false);
     }
