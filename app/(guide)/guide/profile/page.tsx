@@ -73,7 +73,7 @@ export default function GuideProfile() {
       {/* Profile Card */}
       <div className="bg-white rounded-lg shadow-lg overflow-hidden">
         {/* Header Background */}
-        <div className="h-32 bg-gradient-to-r from-orange-400 to-orange-600"></div>
+        <div className="h-32 bg-linear-to-r from-orange-400 to-orange-600"></div>
 
         {/* Profile Content */}
         <div className="px-6 pb-6">
@@ -87,7 +87,7 @@ export default function GuideProfile() {
                   className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg"
                 />
               ) : (
-                <div className="w-32 h-32 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white text-5xl font-bold border-4 border-white shadow-lg">
+                <div className="w-32 h-32 rounded-full bg-linear-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white text-5xl font-bold border-4 border-white shadow-lg">
                   {profile.fullName
                     .split(" ")
                     .map((n) => n[0])
@@ -175,106 +175,6 @@ export default function GuideProfile() {
         >
           ← Back to Dashboard
         </Link>
-      </div>
-    </div>
-  );
-}
-
-        {/* Profile Information */}
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="border-b pb-4">
-              <label className="text-sm font-semibold text-gray-600 block mb-2">
-                Full Name
-              </label>
-              <p className="text-lg text-gray-800">{profile.fullName}</p>
-            </div>
-
-            <div className="border-b pb-4">
-              <label className="text-sm font-semibold text-gray-600 block mb-2">
-                Username
-              </label>
-              <p className="text-lg text-gray-800">@{profile.username}</p>
-            </div>
-
-            <div className="border-b pb-4">
-              <label className="text-sm font-semibold text-gray-600 block mb-2">
-                Email Address
-              </label>
-              <p className="text-lg text-gray-800">{profile.email}</p>
-            </div>
-
-            <div className="border-b pb-4">
-              <label className="text-sm font-semibold text-gray-600 block mb-2">
-                Phone Number
-              </label>
-              <p className="text-lg text-gray-800">{profile.phoneNumber}</p>
-            </div>
-
-            <div className="border-b pb-4">
-              <label className="text-sm font-semibold text-gray-600 block mb-2">
-                Account Type
-              </label>
-              <p className="text-lg text-gray-800">
-                <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">
-                  {profile.role === "guide" ? "Guide" : profile.role}
-                </span>
-              </p>
-            </div>
-
-            <div className="border-b pb-4">
-              <label className="text-sm font-semibold text-gray-600 block mb-2">
-                Member Since
-              </label>
-              <p className="text-lg text-gray-800">
-                {formatDate(profile.createdAt)}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="mt-8 flex gap-4">
-          <button
-            onClick={() => router.push("/guide/edit-profile")}
-            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-semibold transition"
-          >
-            Edit Profile
-          </button>
-          <button
-            onClick={handleLogout}
-            className="flex-1 bg-red-600 hover:bg-red-700 text-white py-3 px-6 rounded-lg font-semibold transition"
-          >
-            Logout
-          </button>
-        </div>
-      </div>
-
-      {/* Additional Information */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mt-6">
-        <h2 className="text-lg font-semibold text-blue-900 mb-3">
-          Guide Information
-        </h2>
-        <ul className="space-y-2 text-blue-800">
-          <li className="flex items-start">
-            <span className="mr-3">✓</span>
-            <span>You are registered as a guide and can accept booking requests</span>
-          </li>
-          <li className="flex items-start">
-            <span className="mr-3">✓</span>
-            <span>View all incoming booking requests in the Booking Requests page</span>
-          </li>
-          <li className="flex items-start">
-            <span className="mr-3">✓</span>
-            <span>
-              Approve or decline guest requests based on your availability
-            </span>
-          </li>
-          <li className="flex items-start">
-            <span className="mr-3">✓</span>
-            <span>Update your profile information anytime</span>
-          </li>
-        </ul>
       </div>
     </div>
   );

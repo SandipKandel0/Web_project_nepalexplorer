@@ -23,7 +23,7 @@ export const createGuideRequest = async (guideRequestData: any) => {
         },
       }
     );
-    return response.data;
+    return response.data.data || response.data;
   } catch (err: Error | any) {
     throw new Error(
       err.response?.data?.message || 
@@ -44,7 +44,7 @@ export const getMyGuideRequests = async () => {
         },
       }
     );
-    return response.data;
+    return response.data.data || response.data;
   } catch (err: Error | any) {
     throw new Error(
       err.response?.data?.message || 
@@ -65,7 +65,7 @@ export const getGuideRequests = async () => {
         },
       }
     );
-    return response.data;
+    return response.data.data || response.data;
   } catch (err: Error | any) {
     throw new Error(
       err.response?.data?.message || 
@@ -86,7 +86,7 @@ export const getMyRequestedGuides = async () => {
         },
       }
     );
-    return response.data;
+    return response.data.data || response.data;
   } catch (err: Error | any) {
     throw new Error(
       err.response?.data?.message || 
@@ -107,7 +107,7 @@ export const getGuideRequest = async (id: string) => {
         },
       }
     );
-    return response.data;
+    return response.data.data || response.data;
   } catch (err: Error | any) {
     throw new Error(
       err.response?.data?.message || 
@@ -120,7 +120,7 @@ export const getGuideRequest = async (id: string) => {
 export const approveGuideRequest = async (id: string) => {
   try {
     const token = getToken();
-    const response = await axiosInstance.put(
+    const response = await axiosInstance.patch(
       API.GUIDE.APPROVE_REQUEST.replace(":id", id),
       {},
       {
@@ -142,7 +142,7 @@ export const approveGuideRequest = async (id: string) => {
 export const declineGuideRequest = async (id: string) => {
   try {
     const token = getToken();
-    const response = await axiosInstance.put(
+    const response = await axiosInstance.patch(
       API.GUIDE.DECLINE_REQUEST.replace(":id", id),
       {},
       {
