@@ -6,6 +6,20 @@ import Link from "next/link";
 import { setUserData } from "@/lib/cookies";
 import { updateGuideProfile } from "@/lib/api/auth";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5050/api";
+const BACKEND_BASE_URL = API_BASE_URL.replace(/\/api\/?$/, "");
+
+const getImageUrl = (imagePath?: string) => {
+  if (!imagePath) return "";
+  if (imagePath.startsWith("http://") || imagePath.startsWith("https://") || imagePath.startsWith("data:")) {
+    return imagePath;
+  }
+  if (imagePath.startsWith("/uploads")) {
+    return `${BACKEND_BASE_URL}${imagePath}`;
+  }
+  return `${BACKEND_BASE_URL}/uploads/${imagePath}`;
+};
+
 interface GuideProfile {
   id?: string;
   _id: string;
@@ -48,7 +62,7 @@ export default function GuideProfile() {
         if (guideData) {
           const parsed = JSON.parse(guideData);
           setProfile(parsed);
-          setPreviewImage(parsed.profileImage || "");
+          setPreviewImage(getImageUrl(parsed.profileImage));
           setForm({
             fullName: parsed.fullName || "",
             email: parsed.email || "",
@@ -75,7 +89,7 @@ export default function GuideProfile() {
   const resetForm = () => {
     if (!profile) return;
     setImageFile(null);
-    setPreviewImage(profile.profileImage || "");
+    setPreviewImage(getImageUrl(profile.profileImage));
     setForm({
       fullName: profile.fullName || "",
       email: profile.email || "",
@@ -153,7 +167,7 @@ export default function GuideProfile() {
         bio: mergedProfile.bio || "",
       });
       setImageFile(null);
-      setPreviewImage(mergedProfile.profileImage || "");
+      setPreviewImage(getImageUrl(mergedProfile.profileImage));
 
       const existingGuideData = localStorage.getItem("guide_data");
       const parsedExistingGuideData = existingGuideData
@@ -176,14 +190,6 @@ export default function GuideProfile() {
     } finally {
       setSubmitting(false);
     }
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
   };
 
   if (loading) {
@@ -386,13 +392,6 @@ export default function GuideProfile() {
               )}
             </div>
           )}
-
-          {/* Member Since */}
-          <div className="py-6 border-t border-gray-200 text-center">
-            <p className="text-sm text-gray-600">
-              Member since {formatDate(profile.createdAt)}
-            </p>
-          </div>
 
           {isEditing && (
             <div className="py-6 border-t border-gray-200">

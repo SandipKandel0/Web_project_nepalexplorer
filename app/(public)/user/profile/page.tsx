@@ -6,6 +6,20 @@ import Link from "next/link";
 import { getUserData, setUserData } from "@/lib/cookies";
 import { updateProfile } from "@/lib/api/auth";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5050/api";
+const BACKEND_BASE_URL = API_BASE_URL.replace(/\/api\/?$/, "");
+
+const getImageUrl = (imagePath?: string) => {
+  if (!imagePath) return "";
+  if (imagePath.startsWith("http://") || imagePath.startsWith("https://") || imagePath.startsWith("data:")) {
+    return imagePath;
+  }
+  if (imagePath.startsWith("/uploads")) {
+    return `${BACKEND_BASE_URL}${imagePath}`;
+  }
+  return `${BACKEND_BASE_URL}/uploads/${imagePath}`;
+};
+
 interface UserProfile {
   id?: string;
   _id?: string;
@@ -53,7 +67,7 @@ export default function UserProfilePage() {
           phone: parsedUser.phone || "",
         });
         if (parsedUser.profileImage) {
-          setPreview(parsedUser.profileImage);
+          setPreview(getImageUrl(parsedUser.profileImage));
         }
       } catch (err) {
         router.push("/login");
@@ -73,7 +87,7 @@ export default function UserProfilePage() {
       email: user.email || "",
       phone: user.phone || "",
     });
-    setPreview(user.profileImage || "");
+    setPreview(getImageUrl(user.profileImage));
     setImageFile(null);
   };
 
@@ -124,7 +138,7 @@ export default function UserProfilePage() {
           email: mergedUser.email || "",
           phone: mergedUser.phone || "",
         });
-        setPreview(mergedUser.profileImage || "");
+        setPreview(getImageUrl(mergedUser.profileImage));
         setImageFile(null);
 
         localStorage.setItem("user_data", JSON.stringify(mergedUser));
@@ -136,15 +150,6 @@ export default function UserProfilePage() {
     } finally {
       setSubmitting(false);
     }
-  };
-
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return "N/A";
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
   };
 
   if (loading) {
@@ -292,9 +297,6 @@ export default function UserProfilePage() {
             </div>
           </div>
 
-          <div className="py-6 border-t border-gray-200 text-center">
-            <p className="text-sm text-gray-600">Member since {formatDate(user.createdAt)}</p>
-          </div>
         </div>
       </form>
 
