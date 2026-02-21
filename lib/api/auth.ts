@@ -143,3 +143,20 @@ export const updateProfile = async (userId: string, formData: FormData) => {
     throw new Error(error.response?.data?.message || "Failed to update profile");
   }
 };
+
+export const updateGuideProfile = async (guideId: string, formData: FormData) => {
+  try {
+    const response = await axiosInstance.put(
+      GUIDE_ENDPOINTS.UPDATE_PROFILE(guideId),
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || "Failed to update guide profile");
+  }
+};

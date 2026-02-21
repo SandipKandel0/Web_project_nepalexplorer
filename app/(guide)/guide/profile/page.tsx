@@ -3,8 +3,11 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { setUserData } from "@/lib/cookies";
+import { updateGuideProfile } from "@/lib/api/auth";
 
 interface GuideProfile {
+  id?: string;
   _id: string;
   fullName: string;
   email: string;
@@ -20,7 +23,22 @@ interface GuideProfile {
 
 export default function GuideProfile() {
   const [profile, setProfile] = useState<GuideProfile | null>(null);
+  const [form, setForm] = useState({
+    fullName: "",
+    email: "",
+    phone: "",
+    language: "",
+    experience: "",
+    city: "",
+    bio: "",
+  });
   const [loading, setLoading] = useState(true);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [previewImage, setPreviewImage] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const router = useRouter();
 
   useEffect(() => {
@@ -30,6 +48,16 @@ export default function GuideProfile() {
         if (guideData) {
           const parsed = JSON.parse(guideData);
           setProfile(parsed);
+          setPreviewImage(parsed.profileImage || "");
+          setForm({
+            fullName: parsed.fullName || "",
+            email: parsed.email || "",
+            phone: parsed.phone || "",
+            language: parsed.language || "",
+            experience: parsed.experience || "",
+            city: parsed.city || "",
+            bio: parsed.bio || "",
+          });
         } else {
           router.push("/login/guide");
         }
@@ -43,6 +71,112 @@ export default function GuideProfile() {
 
     fetchProfile();
   }, [router]);
+
+  const resetForm = () => {
+    if (!profile) return;
+    setImageFile(null);
+    setPreviewImage(profile.profileImage || "");
+    setForm({
+      fullName: profile.fullName || "",
+      email: profile.email || "",
+      phone: profile.phone || "",
+      language: profile.language || "",
+      experience: profile.experience || "",
+      city: profile.city || "",
+      bio: profile.bio || "",
+    });
+  };
+
+  const handleCancel = () => {
+    resetForm();
+    setError("");
+    setSuccess("");
+    setIsEditing(false);
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setImageFile(file);
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setPreviewImage(event.target?.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleSave = async (e?: React.FormEvent) => {
+    e?.preventDefault();
+    if (!profile) return;
+
+    setError("");
+    setSuccess("");
+
+    try {
+      setSubmitting(true);
+      const formData = new FormData();
+      formData.append("fullName", form.fullName);
+      formData.append("email", form.email);
+      formData.append("phone", form.phone);
+      formData.append("language", form.language);
+      formData.append("experience", form.experience);
+      formData.append("city", form.city);
+      formData.append("bio", form.bio);
+      if (imageFile) {
+        formData.append("profileImage", imageFile);
+      }
+
+      const guideId = profile._id || profile.id;
+      if (!guideId) {
+        throw new Error("Guide ID is missing");
+      }
+
+      const response = await updateGuideProfile(guideId, formData);
+      const updatedGuide = response?.data || {};
+
+      const mergedProfile = {
+        ...profile,
+        ...updatedGuide,
+        _id: updatedGuide._id || updatedGuide.id || profile._id || profile.id,
+        id: updatedGuide.id || updatedGuide._id || profile.id || profile._id,
+      } as GuideProfile;
+
+      setProfile(mergedProfile);
+      setForm({
+        fullName: mergedProfile.fullName || "",
+        email: mergedProfile.email || "",
+        phone: mergedProfile.phone || "",
+        language: mergedProfile.language || "",
+        experience: mergedProfile.experience || "",
+        city: mergedProfile.city || "",
+        bio: mergedProfile.bio || "",
+      });
+      setImageFile(null);
+      setPreviewImage(mergedProfile.profileImage || "");
+
+      const existingGuideData = localStorage.getItem("guide_data");
+      const parsedExistingGuideData = existingGuideData
+        ? JSON.parse(existingGuideData)
+        : {};
+      const updatedGuideData = {
+        ...parsedExistingGuideData,
+        ...mergedProfile,
+        role: "guide",
+      };
+
+      localStorage.setItem("guide_data", JSON.stringify(updatedGuideData));
+      localStorage.setItem("user_data", JSON.stringify(updatedGuideData));
+      await setUserData(updatedGuideData);
+
+      setSuccess("Profile updated successfully!");
+      setIsEditing(false);
+    } catch (err: any) {
+      setError(err.message || "Failed to update guide profile");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -70,8 +204,23 @@ export default function GuideProfile() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
+      {error && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
+          {error}
+        </div>
+      )}
+
+      {success && (
+        <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-green-700">
+          {success}
+        </div>
+      )}
+
       {/* Profile Card */}
-      <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+      <form
+        onSubmit={handleSave}
+        className="bg-white rounded-lg shadow-lg overflow-hidden"
+      >
         {/* Header Background */}
         <div className="h-32 bg-linear-to-r from-orange-400 to-orange-600"></div>
 
@@ -80,9 +229,9 @@ export default function GuideProfile() {
           {/* Profile Image and Name */}
           <div className="flex flex-col items-center -mt-16 mb-6">
             <div className="relative">
-              {profile.profileImage ? (
+              {previewImage || profile.profileImage ? (
                 <img
-                  src={profile.profileImage}
+                  src={previewImage || profile.profileImage}
                   alt={profile.fullName}
                   className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg"
                 />
@@ -100,6 +249,22 @@ export default function GuideProfile() {
               {profile.fullName}
             </h1>
             <p className="text-orange-600 font-semibold mt-1">Professional Guide</p>
+            {isEditing && (
+              <div className="mt-4 w-full max-w-sm">
+                <label className="block text-sm font-medium text-gray-600 mb-2 text-left">
+                  Profile Image
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                />
+                <p className="text-xs text-gray-500 mt-1 text-left">
+                  Leave empty to keep current image
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Guide Info Grid */}
@@ -112,15 +277,45 @@ export default function GuideProfile() {
               <div className="space-y-3">
                 <div>
                   <label className="text-sm font-medium text-gray-600">Email</label>
-                  <p className="text-gray-800">{profile.email}</p>
+                  {isEditing ? (
+                    <input
+                      type="email"
+                      value={form.email}
+                      onChange={(e) => setForm({ ...form, email: e.target.value })}
+                      className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md"
+                      required
+                    />
+                  ) : (
+                    <p className="text-gray-800">{profile.email}</p>
+                  )}
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-600">Phone</label>
-                  <p className="text-gray-800">{profile.phone}</p>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      value={form.phone}
+                      onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                      className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md"
+                      required
+                    />
+                  ) : (
+                    <p className="text-gray-800">{profile.phone}</p>
+                  )}
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-600">City</label>
-                  <p className="text-gray-800">{profile.city}</p>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      value={form.city}
+                      onChange={(e) => setForm({ ...form, city: e.target.value })}
+                      className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md"
+                      required
+                    />
+                  ) : (
+                    <p className="text-gray-800">{profile.city}</p>
+                  )}
                 </div>
               </div>
             </div>
@@ -133,11 +328,36 @@ export default function GuideProfile() {
               <div className="space-y-3">
                 <div>
                   <label className="text-sm font-medium text-gray-600">Language</label>
-                  <p className="text-gray-800">{profile.language}</p>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      value={form.language}
+                      onChange={(e) => setForm({ ...form, language: e.target.value })}
+                      className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md"
+                      required
+                    />
+                  ) : (
+                    <p className="text-gray-800">{profile.language}</p>
+                  )}
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-600">Experience</label>
-                  <p className="text-gray-800">{profile.experience} years</p>
+                  {isEditing ? (
+                    <select
+                      value={form.experience}
+                      onChange={(e) => setForm({ ...form, experience: e.target.value })}
+                      className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md"
+                      required
+                    >
+                      <option value="">Select experience</option>
+                      <option value="1-3">1-3 years</option>
+                      <option value="3-5">3-5 years</option>
+                      <option value="5-10">5-10 years</option>
+                      <option value="10+">10+ years</option>
+                    </select>
+                  ) : (
+                    <p className="text-gray-800">{profile.experience} years</p>
+                  )}
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-600">Rating</label>
@@ -150,10 +370,20 @@ export default function GuideProfile() {
           </div>
 
           {/* Bio Section */}
-          {profile.bio && (
+          {(profile.bio || isEditing) && (
             <div className="py-6 border-t border-gray-200">
               <h3 className="text-lg font-semibold text-gray-800 mb-3">Bio</h3>
-              <p className="text-gray-700">{profile.bio}</p>
+              {isEditing ? (
+                <textarea
+                  value={form.bio}
+                  onChange={(e) => setForm({ ...form, bio: e.target.value })}
+                  rows={4}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  placeholder="Tell travelers about yourself"
+                />
+              ) : (
+                <p className="text-gray-700">{profile.bio}</p>
+              )}
             </div>
           )}
 
@@ -163,15 +393,65 @@ export default function GuideProfile() {
               Member since {formatDate(profile.createdAt)}
             </p>
           </div>
+
+          {isEditing && (
+            <div className="py-6 border-t border-gray-200">
+              <label className="block text-sm font-medium text-gray-600 mb-2">
+                Full Name
+              </label>
+              <input
+                type="text"
+                value={form.fullName}
+                onChange={(e) => setForm({ ...form, fullName: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                required
+              />
+            </div>
+          )}
         </div>
-      </div>
+      </form>
 
       {/* Action Buttons */}
       <div className="bg-white rounded-lg shadow p-6 text-center">
-        <p className="text-gray-600 mb-4">Profile information is read-only</p>
+        <p className="text-gray-600 mb-4">
+          {isEditing ? "Update your profile details" : "Manage your guide profile"}
+        </p>
+        {isEditing ? (
+          <div className="flex items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={handleCancel}
+              className="inline-block bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-6 rounded-lg transition"
+              disabled={submitting}
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={handleSave}
+              className="inline-block bg-orange-600 hover:bg-orange-700 text-white font-semibold py-2 px-6 rounded-lg transition disabled:opacity-60"
+              disabled={submitting}
+            >
+              {submitting ? "Saving..." : "Save Changes"}
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => {
+              setError("");
+              setSuccess("");
+              resetForm();
+              setIsEditing(true);
+            }}
+            className="inline-block bg-orange-600 hover:bg-orange-700 text-white font-semibold py-2 px-6 rounded-lg transition mr-3"
+          >
+            Edit Profile
+          </button>
+        )}
         <Link
           href="/guide/dashboard"
-          className="inline-block bg-orange-600 hover:bg-orange-700 text-white font-semibold py-2 px-6 rounded-lg transition"
+          className="inline-block bg-orange-100 hover:bg-orange-200 text-orange-700 font-semibold py-2 px-6 rounded-lg transition"
         >
           ← Back to Dashboard
         </Link>
