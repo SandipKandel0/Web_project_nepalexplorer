@@ -22,6 +22,12 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
               Create User
             </Link>
             <Link
+              href="/admin/destinations"
+              className="block px-4 py-2 rounded hover:bg-slate-700 transition"
+            >
+              Upload Destinations
+            </Link>
+            <Link
               href="/user/profile"
               className="block px-4 py-2 rounded hover:bg-slate-700 transition"
             >

@@ -35,6 +35,8 @@ export const API = {
         GET_USER: '/admin/users/:id',
         UPDATE_USER: '/admin/users/:id',
         DELETE_USER: '/admin/users/:id',
+        DESTINATIONS: '/admin/destinations',
+        DELETE_DESTINATION: '/admin/destinations/:id',
     },
     GUIDE: {
         CREATE_REQUEST: '/guide/requests',

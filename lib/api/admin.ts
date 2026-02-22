@@ -94,3 +94,70 @@ export const deleteUser = async (id: string) => {
     );
   }
 };
+
+export const getAllGuests = async () => {
+  try {
+    const response = await axiosInstance.get("/guide");
+    return response.data;
+  } catch (err: Error | any) {
+    throw new Error(
+      err.response?.data?.message || err.message || "Failed to fetch guests"
+    );
+  }
+};
+
+export const getAllDestinations = async () => {
+  try {
+    const token = await getAuthToken();
+    const response = await axiosInstance.get(API.ADMIN.DESTINATIONS, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (err: Error | any) {
+    throw new Error(
+      err.response?.data?.message || err.message || "Failed to fetch destinations"
+    );
+  }
+};
+
+export const uploadDestination = async (destinationData: FormData) => {
+  try {
+    const token = await getAuthToken();
+    const response = await axiosInstance.post(
+      API.ADMIN.DESTINATIONS,
+      destinationData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    return response.data;
+  } catch (err: Error | any) {
+    throw new Error(
+      err.response?.data?.message || err.message || "Failed to upload destination"
+    );
+  }
+};
+
+export const deleteDestination = async (id: string) => {
+  try {
+    const token = await getAuthToken();
+    const response = await axiosInstance.delete(
+      API.ADMIN.DELETE_DESTINATION.replace(":id", id),
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (err: Error | any) {
+    throw new Error(
+      err.response?.data?.message || err.message || "Failed to delete destination"
+    );
+  }
+};

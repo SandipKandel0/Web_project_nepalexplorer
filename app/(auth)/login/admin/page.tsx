@@ -31,8 +31,8 @@ export default function AdminLoginPage() {
         }
 
         // Verify it's an admin login
-        const user = response.data?.user;
-        if (user?.role !== "admin") {
+        const userRole = response.data?.user?.role || response.data?.role;
+        if (userRole !== "admin") {
           setError(
             `This account does not have admin access. Please use the appropriate login page.`
           );
@@ -68,7 +68,7 @@ export default function AdminLoginPage() {
               <input
                 id="email"
                 type="text"
-                placeholder="Enter your email"
+                placeholder="admin@webnepal.com"
                 className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-600 focus:border-gray-600"
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
               />
@@ -81,11 +81,15 @@ export default function AdminLoginPage() {
               <input
                 id="password"
                 type="password"
-                placeholder="Enter your password"
+                placeholder="admin12345"
                 className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-600 focus:border-gray-600"
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
               />
             </div>
+
+            <p className="w-full text-xs text-gray-500 mb-3">
+              Default admin login: admin@webnepal.com / admin12345
+            </p>
 
             <div className="w-full flex justify-end mb-3">
               <a href="/forgot-password" className="text-sm text-gray-600 hover:underline">
