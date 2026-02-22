@@ -37,7 +37,8 @@ export default function UserLoginPage() {
       const response = await authAPI.loginUser(formData);
 
       if (response.success) {
-        const userData = { ...response.data, role: "user" };
+        const resolvedRole = response.data?.role || "user";
+        const userData = { ...response.data, role: resolvedRole };
         
         // Store token and data in localStorage
         authAPI.setToken(response.data.token, "user");
@@ -48,7 +49,11 @@ export default function UserLoginPage() {
         await setUserData(userData);
         
         alert("Login successful!");
-        router.push("/user/dashboard");
+        if (resolvedRole === "admin") {
+          router.push("/admin/users");
+        } else {
+          router.push("/user/dashboard");
+        }
       }
     } catch (err: any) {
       console.error(err);
@@ -57,6 +62,7 @@ export default function UserLoginPage() {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-blue-50 flex items-center justify-center p-6">
@@ -107,6 +113,7 @@ export default function UserLoginPage() {
             {loading ? "Signing in..." : "Sign In"}
           </button>
         </form>
+
 
         <p className="text-center text-gray-600 mt-6 text-sm">
           Don't have an account?{" "}

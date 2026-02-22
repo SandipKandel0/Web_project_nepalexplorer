@@ -1,9 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
-import { getAllGuests, getAllUsers, deleteUser } from "@/lib/api/admin";
-import { MdEdit, MdDelete, MdAdd } from "react-icons/md";
+import { deleteGuide, getAllGuests, getAllUsers, deleteUser } from "@/lib/api/admin";
+import { MdDelete } from "react-icons/md";
 
 export default function UsersPage() {
   const [users, setUsers] = useState<any[]>([]);
@@ -43,18 +42,23 @@ export default function UsersPage() {
     }
   };
 
+  const handleDeleteGuide = async (guideId: string) => {
+    if (!confirm("Are you sure you want to delete this guide?")) return;
+
+    try {
+      await deleteGuide(guideId);
+      setGuests((prev) => prev.filter((guest) => (guest._id || guest.id) !== guideId));
+    } catch (err: any) {
+      setError(err.message || "Failed to delete guide");
+    }
+  };
+
   if (loading) return <div className="text-center py-8">Loading...</div>;
 
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Users Management</h1>
-        <Link
-          href="/admin/users/create"
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded flex items-center gap-2"
-        >
-          <MdAdd size={20} /> Create User
-        </Link>
       </div>
 
       {error && (
@@ -99,19 +103,7 @@ export default function UsersPage() {
                   </span>
                 </td>
                 <td className="px-6 py-3">{user.phone || user.phoneNumber}</td>
-                <td className="px-6 py-3 flex gap-3">
-                  <Link
-                    href={`/admin/users/${user._id}`}
-                    className="text-blue-600 hover:text-blue-800"
-                  >
-                    View
-                  </Link>
-                  <Link
-                    href={`/admin/users/${user._id}/edit`}
-                    className="text-amber-600 hover:text-amber-800 flex items-center gap-1"
-                  >
-                    <MdEdit size={16} /> Edit
-                  </Link>
+                <td className="px-6 py-3">
                   <button
                     onClick={() => handleDelete(user._id)}
                     className="text-red-600 hover:text-red-800 flex items-center gap-1"
@@ -143,6 +135,7 @@ export default function UsersPage() {
                 <th className="px-6 py-3 text-left text-sm font-semibold">Language</th>
                 <th className="px-6 py-3 text-left text-sm font-semibold">Experience</th>
                 <th className="px-6 py-3 text-left text-sm font-semibold">City</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -154,6 +147,14 @@ export default function UsersPage() {
                   <td className="px-6 py-3">{guest.language}</td>
                   <td className="px-6 py-3">{guest.experience}</td>
                   <td className="px-6 py-3">{guest.city}</td>
+                  <td className="px-6 py-3">
+                    <button
+                      onClick={() => handleDeleteGuide(guest._id || guest.id)}
+                      className="text-red-600 hover:text-red-800"
+                    >
+                      Delete
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>

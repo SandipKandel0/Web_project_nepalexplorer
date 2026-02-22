@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import {
   deleteDestination,
   getAllDestinations,
+  updateDestination,
   uploadDestination,
 } from "@/lib/api/admin";
 
@@ -12,6 +13,12 @@ interface Destination {
   name: string;
   location: string;
   description?: string;
+  bestTime?: string;
+  difficulty?: string;
+  fullDescription?: string;
+  activities?: string[];
+  nearbyPlaces?: string[];
+  popularHotels?: { name: string }[];
   imageUrl?: string;
 }
 
@@ -37,10 +44,17 @@ export default function AdminDestinationsPage() {
   const [success, setSuccess] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [preview, setPreview] = useState("");
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState({
     name: "",
     location: "",
     description: "",
+    bestTime: "",
+    difficulty: "",
+    fullDescription: "",
+    activities: "",
+    nearbyPlaces: "",
+    popularHotels: "",
   });
 
   const fetchDestinations = async () => {
@@ -77,24 +91,59 @@ export default function AdminDestinationsPage() {
     setError("");
     setSuccess("");
 
-    if (!imageFile) {
-      setError("Destination image is required");
-      return;
-    }
-
     try {
       setSubmitting(true);
       const formData = new FormData();
       formData.append("name", form.name);
       formData.append("location", form.location);
       formData.append("description", form.description);
-      formData.append("image", imageFile);
+      formData.append("bestTime", form.bestTime);
+      formData.append("difficulty", form.difficulty);
+      formData.append("fullDescription", form.fullDescription);
+      formData.append("activities", form.activities);
+      formData.append("nearbyPlaces", form.nearbyPlaces);
+      const hotelLines = form.popularHotels
+        .split("\n")
+        .map((line) => line.trim())
+        .filter(Boolean);
+      const hotels = hotelLines.map((name) => ({ name }));
+      formData.append("popularHotels", JSON.stringify(hotels));
+      
+      console.log("Uploading destination:");
+      console.log("Activities:", form.activities);
+      console.log("Nearby Places:", form.nearbyPlaces);
+      console.log("Hotels:", hotels);
+      
+      if (imageFile) {
+        formData.append("image", imageFile);
+      }
 
-      const response = await uploadDestination(formData);
-      setSuccess(response.message || "Destination uploaded successfully");
-      setForm({ name: "", location: "", description: "" });
+      if (editingId) {
+        const response = await updateDestination(editingId, formData);
+        setSuccess(response.message || "Destination updated successfully");
+      } else {
+        if (!imageFile) {
+          setError("Destination image is required");
+          return;
+        }
+        const response = await uploadDestination(formData);
+        setSuccess(response.message || "Destination uploaded successfully");
+      }
+
+      setForm({
+        name: "",
+        location: "",
+        description: "",
+        bestTime: "",
+        difficulty: "",
+        fullDescription: "",
+        activities: "",
+        nearbyPlaces: "",
+        popularHotels: "",
+      });
       setImageFile(null);
       setPreview("");
+      setEditingId(null);
       await fetchDestinations();
     } catch (err: any) {
       setError(err.message || "Failed to upload destination");
@@ -114,9 +163,47 @@ export default function AdminDestinationsPage() {
     }
   };
 
+  const handleEdit = (destination: Destination) => {
+    setEditingId(destination._id);
+    setForm({
+      name: destination.name,
+      location: destination.location,
+      description: destination.description || "",
+      bestTime: destination.bestTime || "",
+      difficulty: destination.difficulty || "",
+      fullDescription: destination.fullDescription || "",
+      activities: destination.activities?.join(", ") || "",
+      nearbyPlaces: destination.nearbyPlaces?.join(", ") || "",
+      popularHotels: destination.popularHotels
+        ? destination.popularHotels.map((hotel) => hotel.name).join("\n")
+        : "",
+    });
+    setPreview(getImageUrl(destination.imageUrl));
+    setImageFile(null);
+    setError("");
+    setSuccess("");
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    setForm({
+      name: "",
+      location: "",
+      description: "",
+      bestTime: "",
+      difficulty: "",
+      fullDescription: "",
+      activities: "",
+      nearbyPlaces: "",
+      popularHotels: "",
+    });
+    setImageFile(null);
+    setPreview("");
+  };
+
   return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-bold">Destination Upload</h1>
+    <div className="space-y-6 text-black">
+      <h1 className="text-3xl font-bold text-black">Destination Upload</h1>
 
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
@@ -131,8 +218,11 @@ export default function AdminDestinationsPage() {
       )}
 
       <form onSubmit={handleUpload} className="bg-white rounded-lg shadow p-6 space-y-4">
+        <h2 className="text-xl font-semibold text-black">
+          {editingId ? "Update Destination" : "Upload Destination"}
+        </h2>
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-1">Destination Name</label>
+          <label className="block text-sm font-semibold text-black mb-1">Destination Name</label>
           <input
             type="text"
             value={form.name}
@@ -143,7 +233,7 @@ export default function AdminDestinationsPage() {
         </div>
 
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-1">Location</label>
+          <label className="block text-sm font-semibold text-black mb-1">Location</label>
           <input
             type="text"
             value={form.location}
@@ -154,7 +244,7 @@ export default function AdminDestinationsPage() {
         </div>
 
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-1">Description</label>
+          <label className="block text-sm font-semibold text-black mb-1">Description</label>
           <textarea
             value={form.description}
             onChange={(e) => setForm({ ...form, description: e.target.value })}
@@ -164,7 +254,75 @@ export default function AdminDestinationsPage() {
         </div>
 
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-1">Image</label>
+          <label className="block text-sm font-semibold text-black mb-1">Best Time</label>
+          <input
+            type="text"
+            value={form.bestTime}
+            onChange={(e) => setForm({ ...form, bestTime: e.target.value })}
+            className="w-full px-4 py-2 border border-gray-300 rounded"
+            placeholder="Oct - Nov, Mar - Apr"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-semibold text-black mb-1">Difficulty</label>
+          <select
+            value={form.difficulty}
+            onChange={(e) => setForm({ ...form, difficulty: e.target.value })}
+            className="w-full px-4 py-2 border border-gray-300 rounded"
+          >
+            <option value="">Select difficulty</option>
+            <option value="Easy">Easy</option>
+            <option value="Moderate">Moderate</option>
+            <option value="Challenging">Challenging</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-semibold text-black mb-1">Full Description</label>
+          <textarea
+            value={form.fullDescription}
+            onChange={(e) => setForm({ ...form, fullDescription: e.target.value })}
+            className="w-full px-4 py-2 border border-gray-300 rounded"
+            rows={4}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-semibold text-black mb-1">Activities (comma separated)</label>
+          <input
+            type="text"
+            value={form.activities}
+            onChange={(e) => setForm({ ...form, activities: e.target.value })}
+            className="w-full px-4 py-2 border border-gray-300 rounded"
+            placeholder="Trekking, Photography, Cultural Tours"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-semibold text-black mb-1">Nearby Places (comma separated)</label>
+          <input
+            type="text"
+            value={form.nearbyPlaces}
+            onChange={(e) => setForm({ ...form, nearbyPlaces: e.target.value })}
+            className="w-full px-4 py-2 border border-gray-300 rounded"
+            placeholder="Patan, Bhaktapur, Nagarkot"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-semibold text-black mb-1">Popular Hotels (one per line)</label>
+          <textarea
+            value={form.popularHotels}
+            onChange={(e) => setForm({ ...form, popularHotels: e.target.value })}
+            className="w-full px-4 py-2 border border-gray-300 rounded"
+            rows={4}
+            placeholder="Hotel A"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-semibold text-black mb-1">Image</label>
           {preview && (
             <img
               src={preview}
@@ -186,19 +344,35 @@ export default function AdminDestinationsPage() {
           disabled={submitting}
           className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded disabled:opacity-50"
         >
-          {submitting ? "Uploading..." : "Upload Destination"}
+          {submitting
+            ? editingId
+              ? "Updating..."
+              : "Uploading..."
+            : editingId
+            ? "Update Destination"
+            : "Upload Destination"}
         </button>
+        {editingId && (
+          <button
+            type="button"
+            onClick={handleCancelEdit}
+            className="ml-3 bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-2 rounded"
+            disabled={submitting}
+          >
+            Cancel Edit
+          </button>
+        )}
       </form>
 
       <div className="bg-white rounded-lg shadow overflow-x-auto">
         <table className="w-full">
           <thead className="bg-gray-100 border-b">
             <tr>
-              <th className="px-4 py-3 text-left text-sm font-semibold">Image</th>
-              <th className="px-4 py-3 text-left text-sm font-semibold">Name</th>
-              <th className="px-4 py-3 text-left text-sm font-semibold">Location</th>
-              <th className="px-4 py-3 text-left text-sm font-semibold">Description</th>
-              <th className="px-4 py-3 text-left text-sm font-semibold">Actions</th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-black">Image</th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-black">Name</th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-black">Location</th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-black">Description</th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-black">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -212,13 +386,19 @@ export default function AdminDestinationsPage() {
                       className="w-16 h-16 rounded object-cover"
                     />
                   ) : (
-                    <span className="text-gray-400 text-sm">No image</span>
+                    <span className="text-black text-sm">No image</span>
                   )}
                 </td>
                 <td className="px-4 py-3">{destination.name}</td>
                 <td className="px-4 py-3">{destination.location}</td>
                 <td className="px-4 py-3">{destination.description || "-"}</td>
                 <td className="px-4 py-3">
+                  <button
+                    onClick={() => handleEdit(destination)}
+                    className="text-blue-600 hover:text-blue-800 mr-4"
+                  >
+                    Edit
+                  </button>
                   <button
                     onClick={() => handleDelete(destination._id)}
                     className="text-red-600 hover:text-red-800"
@@ -233,7 +413,7 @@ export default function AdminDestinationsPage() {
       </div>
 
       {!loading && destinations.length === 0 && (
-        <div className="text-center text-gray-500 py-6">No destinations uploaded yet.</div>
+        <div className="text-center text-black py-6">No destinations uploaded yet.</div>
       )}
     </div>
   );
