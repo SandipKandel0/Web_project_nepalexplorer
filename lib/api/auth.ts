@@ -39,6 +39,8 @@ interface ResetPasswordData {
   confirmPassword: string;
 }
 
+type AuthRole = "user" | "guide";
+
 export const authAPI = {
   // User Auth
   registerUser: async (data: RegisterUserData) => {
@@ -157,6 +159,43 @@ export const register = async (data: any) => {
     return await authAPI.registerGuide(data);
   } else {
     return await authAPI.registerUser(data);
+  }
+};
+
+export const requestPasswordReset = async (email: string, role: AuthRole = "user") => {
+  try {
+    const data = { email };
+    const response =
+      role === "guide"
+        ? await authAPI.forgotPasswordGuide(data)
+        : await authAPI.forgotPasswordUser(data);
+    return response;
+  } catch (error: Error | any) {
+    throw new Error(
+      error.response?.data?.message || error.message || "Request password reset failed"
+    );
+  }
+};
+
+export const resetPassword = async (
+  token: string,
+  newPassword: string,
+  role: AuthRole = "user"
+) => {
+  try {
+    const payload = {
+      token,
+      newPassword,
+      confirmPassword: newPassword,
+    };
+
+    const response =
+      role === "guide"
+        ? await authAPI.resetPasswordGuide(payload)
+        : await authAPI.resetPasswordUser(payload);
+    return response;
+  } catch (error: Error | any) {
+    throw new Error(error.response?.data?.message || error.message || "Reset password failed");
   }
 };
 

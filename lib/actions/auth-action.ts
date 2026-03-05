@@ -1,7 +1,12 @@
 "use server";
 
-import { loginSchema, registerSchema } from "@/app/(auth)/schema";
-import { login, register } from "@/lib/api/auth";
+import {
+  loginSchema,
+  registerSchema,
+  requestPasswordResetSchema,
+  resetPasswordSchema,
+} from "@/app/(auth)/schema";
+import { login, register, requestPasswordReset, resetPassword } from "@/lib/api/auth";
 import { redirect } from "next/navigation";
 import { clearAuthCookies, setAuthToken, setUserData } from "../cookies";
 
@@ -88,4 +93,59 @@ try {
 export const handleLogout = async () => {
   await clearAuthCookies();
   redirect("/login");
+};
+
+export const handleRequestPasswordReset = async (
+  email: string,
+  role: "user" | "guide" = "user"
+) => {
+  try {
+    requestPasswordResetSchema.parse({ email });
+    const response = await requestPasswordReset(email, role);
+
+    if (response.success) {
+      return {
+        success: true,
+        message: "Password reset email sent successfully",
+      };
+    }
+
+    return {
+      success: false,
+      message: response.message || "Request password reset failed",
+    };
+  } catch (error: Error | any) {
+    return {
+      success: false,
+      message: error.errors?.[0]?.message || error.message || "Request password reset action failed",
+    };
+  }
+};
+
+export const handleResetPassword = async (
+  token: string,
+  newPassword: string,
+  role: "user" | "guide" = "user"
+) => {
+  try {
+    resetPasswordSchema.parse({ password: newPassword, confirmPassword: newPassword });
+    const response = await resetPassword(token, newPassword, role);
+
+    if (response.success) {
+      return {
+        success: true,
+        message: "Password has been reset successfully",
+      };
+    }
+
+    return {
+      success: false,
+      message: response.message || "Reset password failed",
+    };
+  } catch (error: Error | any) {
+    return {
+      success: false,
+      message: error.errors?.[0]?.message || error.message || "Reset password action failed",
+    };
+  }
 };
