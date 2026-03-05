@@ -3,39 +3,46 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { authAPI } from "@/lib/api/auth";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { requestPasswordResetSchema } from "@/app/(auth)/schema";
+import { handleRequestPasswordReset } from "@/lib/actions/auth-action";
+
+type RequestPasswordResetDTO = {
+  email: string;
+};
 
 export default function ForgotPasswordPage() {
   const searchParams = useSearchParams();
   const role = searchParams.get("role") === "guide" ? "guide" : "user";
 
-  const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<RequestPasswordResetDTO>({
+    resolver: zodResolver(requestPasswordResetSchema),
+  });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (data: RequestPasswordResetDTO) => {
     setError("");
     setMessage("");
-
-    if (!email) {
-      setError("Email is required");
-      return;
-    }
 
     try {
       setLoading(true);
 
-      if (role === "guide") {
-        await authAPI.forgotPasswordGuide({ email });
-      } else {
-        await authAPI.forgotPasswordUser({ email });
-      }
+      const response = await handleRequestPasswordReset(data.email, role);
 
-      setMessage("If your account exists, a reset link has been sent to your email.");
+      if (response.success) {
+        setMessage(response.message || "Password reset link sent to your email.");
+      } else {
+        setError(response.message || "Failed to request password reset.");
+      }
     } catch (err: any) {
-      setError(err.response?.data?.message || "Failed to send reset link");
+      setError(err.message || "Failed to request password reset.");
     } finally {
       setLoading(false);
     }
@@ -61,17 +68,18 @@ export default function ForgotPasswordPage() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">Email</label>
             <input
               type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
+              {...register("email")}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="your@email.com"
             />
+            {errors.email && (
+              <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+            )}
           </div>
 
           <button
