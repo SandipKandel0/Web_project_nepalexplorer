@@ -101,6 +101,12 @@ export default function GuideLoginPage() {
             />
           </div>
 
+          <div className="flex justify-end">
+            <Link href="/forgot-password?role=guide" className="text-sm text-orange-600 hover:underline">
+              Forgot password?
+            </Link>
+          </div>
+
           <button
             type="submit"
             disabled={loading}
