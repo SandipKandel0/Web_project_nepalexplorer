@@ -4,6 +4,8 @@ export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost
 export const USER_ENDPOINTS = {
   REGISTER: `${API_BASE_URL}/user/register`,
   LOGIN: `${API_BASE_URL}/user/login`,
+    FORGOT_PASSWORD: `${API_BASE_URL}/user/forgot-password`,
+    RESET_PASSWORD: `${API_BASE_URL}/user/reset-password`,
   GET_PROFILE: (id: string) => `${API_BASE_URL}/user/${id}`,
   UPDATE_PROFILE: (id: string) => `${API_BASE_URL}/user/${id}`,
   ADD_FAVOURITE: `${API_BASE_URL}/user/favourite/add`,
@@ -15,6 +17,8 @@ export const USER_ENDPOINTS = {
 export const GUIDE_ENDPOINTS = {
   REGISTER: `${API_BASE_URL}/guide/register`,
   LOGIN: `${API_BASE_URL}/guide/login`,
+    FORGOT_PASSWORD: `${API_BASE_URL}/guide/forgot-password`,
+    RESET_PASSWORD: `${API_BASE_URL}/guide/reset-password`,
   GET_ALL: `${API_BASE_URL}/guide`,
   GET_PROFILE: (id: string) => `${API_BASE_URL}/guide/${id}`,
   UPDATE_PROFILE: (id: string) => `${API_BASE_URL}/guide/${id}`,

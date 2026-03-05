@@ -29,6 +29,16 @@ interface LoginData {
   password: string;
 }
 
+interface ForgotPasswordData {
+  email: string;
+}
+
+interface ResetPasswordData {
+  token: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
 export const authAPI = {
   // User Auth
   registerUser: async (data: RegisterUserData) => {
@@ -50,6 +60,16 @@ export const authAPI = {
 
   loginUser: async (data: LoginData) => {
     const response = await axiosInstance.post(USER_ENDPOINTS.LOGIN, data);
+    return response.data;
+  },
+
+  forgotPasswordUser: async (data: ForgotPasswordData) => {
+    const response = await axiosInstance.post(USER_ENDPOINTS.FORGOT_PASSWORD, data);
+    return response.data;
+  },
+
+  resetPasswordUser: async (data: ResetPasswordData) => {
+    const response = await axiosInstance.post(USER_ENDPOINTS.RESET_PASSWORD, data);
     return response.data;
   },
 
@@ -76,6 +96,16 @@ export const authAPI = {
 
   loginGuide: async (data: LoginData) => {
     const response = await axiosInstance.post(GUIDE_ENDPOINTS.LOGIN, data);
+    return response.data;
+  },
+
+  forgotPasswordGuide: async (data: ForgotPasswordData) => {
+    const response = await axiosInstance.post(GUIDE_ENDPOINTS.FORGOT_PASSWORD, data);
+    return response.data;
+  },
+
+  resetPasswordGuide: async (data: ResetPasswordData) => {
+    const response = await axiosInstance.post(GUIDE_ENDPOINTS.RESET_PASSWORD, data);
     return response.data;
   },
 

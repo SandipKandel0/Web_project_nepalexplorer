@@ -108,7 +108,7 @@ export default function DestinationsPage() {
   return (
     <div className="max-w-6xl mx-auto text-black py-6">
       <div className="bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200">
-        <div className="h-28 bg-linear-to-r from-blue-500 to-blue-700"></div>
+        <div className="h-28 bg-linear-to-r from-red-500 to-blue-500"></div>
 
         <div className="px-6 pb-6 -mt-8">
           <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm mb-6">
@@ -117,7 +117,7 @@ export default function DestinationsPage() {
               Discover amazing places and book a local guide for your adventure
             </p>
           </div>
-
+ 
           <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm mb-6">
             <label className="block text-sm font-semibold text-black mb-2">
               Search Destinations
@@ -221,9 +221,9 @@ export default function DestinationsPage() {
                     </Link>
                     <button
                       onClick={() => setSelectedDestination(destination)}
-                      className="px-4 py-2 bg-gray-900 hover:bg-black text-white rounded-lg font-semibold transition"
+                      className="px-4 py-2 bg-blue-900 hover:bg-black text-white rounded-lg font-semibold transition"
                       title="Learn more"
-                    >
+                    > 
                       Details
                     </button>
                   </div>
