@@ -1,12 +1,21 @@
+"use client";
 
 import { ReactNode } from "react";
+import { usePathname } from "next/navigation";
 import Header from "./_components/Header";
 
 export default function PublicLayout({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
+  
+  // Don't show Header for authenticated routes (user, guide, admin)
+  const isAuthenticatedRoute = pathname?.startsWith("/user") || 
+                                pathname?.startsWith("/guide") || 
+                                pathname?.startsWith("/admin");
+
   return (
     <>
-      <Header />
-      <main className="min-h-screen bg-gray-50 p-6">{children}</main>
+      {!isAuthenticatedRoute && <Header />}
+      <main className={`min-h-screen bg-gray-50 ${!isAuthenticatedRoute ? 'p-6' : ''}`}>{children}</main>
     </>
   );
 }
