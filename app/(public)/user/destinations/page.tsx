@@ -9,7 +9,7 @@ const destinations = [
     id: 1,
     name: "Kathmandu Valley",
     description: "Explore ancient temples, palaces, and vibrant markets in Nepal's capital",
-    image: "/images/kathmandu.jpg",
+    image: "/image.jpeg",
     activities: ["Temple Tours", "Cultural Tours", "Food Tours"],
     bestTime: "Oct - Nov, Mar - Apr",
     difficulty: "Easy",
@@ -18,7 +18,7 @@ const destinations = [
     id: 2,
     name: "Pokhara",
     description: "Lakeside paradise with stunning mountain views and adventure activities",
-    image: "/images/pokhara.jpg",
+    image: "/image1.jpg",
     activities: ["Paragliding", "Boating", "Mountain Views"],
     bestTime: "Oct - Nov, Mar - May",
     difficulty: "Easy to Moderate",
@@ -27,7 +27,7 @@ const destinations = [
     id: 3,
     name: "Everest Base Camp",
     description: "Trek to the base of the world's highest mountain",
-    image: "/images/everest.jpg",
+    image: "/image.jpeg",
     activities: ["Trekking", "Mountain Views", "Photography"],
     bestTime: "Mar - May, Sep - Nov",
     difficulty: "Challenging",
@@ -36,7 +36,7 @@ const destinations = [
     id: 4,
     name: "Chitwan National Park",
     description: "Wildlife safari and jungle adventures in Nepal's first national park",
-    image: "/images/chitwan.jpg",
+    image: "/image1.jpg",
     activities: ["Wildlife Safari", "Jungle Walk", "Canoeing"],
     bestTime: "Oct - Mar",
     difficulty: "Easy",
@@ -45,7 +45,7 @@ const destinations = [
     id: 5,
     name: "Annapurna Circuit",
     description: "One of the world's best trekking routes with diverse landscapes",
-    image: "/images/annapurna.jpg",
+    image: "/image.jpeg",
     activities: ["Trekking", "Mountain Views", "Cultural Experience"],
     bestTime: "Mar - May, Oct - Nov",
     difficulty: "Moderate to Challenging",
@@ -54,7 +54,7 @@ const destinations = [
     id: 6,
     name: "Lumbini",
     description: "Birthplace of Lord Buddha and UNESCO World Heritage Site",
-    image: "/images/lumbini.jpg",
+    image: "/image1.jpg",
     activities: ["Temple Tours", "Meditation", "Cultural Tours"],
     bestTime: "Oct - Mar",
     difficulty: "Easy",
@@ -159,8 +159,14 @@ export default function DestinationsPage() {
               )}
             </button>
 
-            <div className="h-48 bg-linear-to-r from-blue-500 to-purple-500 flex items-center justify-center">
-              <span className="text-white text-6xl">📍</span>
+            <div className="relative h-48 overflow-hidden">
+              <Image
+                src={destination.image}
+                alt={destination.name}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              />
             </div>
 
             <div className="p-6">

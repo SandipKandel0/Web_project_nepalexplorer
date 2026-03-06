@@ -38,8 +38,13 @@ export default function UserProfilePage() {
           email: userData.user?.email || userData.email || "",
           phoneNumber: userData.user?.phoneNumber || userData.phoneNumber || "",
         });
-        if (userData.user?.imageUrl || userData.imageUrl) {
-          setPreview(userData.user?.imageUrl || userData.imageUrl);
+        if (userData.user?.profileImage || userData.profileImage || userData.user?.imageUrl || userData.imageUrl) {
+          setPreview(
+            userData.user?.profileImage ||
+            userData.profileImage ||
+            userData.user?.imageUrl ||
+            userData.imageUrl
+          );
         }
       } catch (err) {
         router.push("/login");
@@ -107,19 +112,19 @@ export default function UserProfilePage() {
     );
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-orange-50 py-8 text-black">
       <div className="max-w-2xl mx-auto px-4">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold">My Profile</h1>
+          <h1 className="text-3xl font-bold text-orange-700">My Profile</h1>
           <Link
             href={user.role === "admin" ? "/admin/users" : "/user/dashboard"}
-            className="text-blue-600 hover:text-blue-800"
+            className="text-black hover:underline"
           >
             ← Back
           </Link>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-8">
+        <div className="bg-white rounded-2xl shadow p-8 border border-orange-200">
           {error && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
               {error}
@@ -133,30 +138,47 @@ export default function UserProfilePage() {
           )}
 
           <form onSubmit={handleSubmit}>
-            <div className="mb-6">
-              <label className="block text-gray-700 font-semibold mb-2">
-                Profile Picture
-              </label>
-              {preview && (
-                <img
-                  src={preview}
-                  alt="Profile"
-                  className="w-32 h-32 rounded-lg mb-4 object-cover"
+            <div className="mb-8 rounded-2xl border border-orange-200 bg-linear-to-br from-orange-50 to-white p-6">
+              <div className="flex flex-col items-center text-center">
+                <div className="relative mb-4">
+                  {preview ? (
+                    <img
+                      src={preview}
+                      alt="Profile"
+                      className="h-36 w-36 rounded-full object-cover border-4 border-orange-400 shadow-md"
+                    />
+                  ) : (
+                    <div className="h-36 w-36 rounded-full border-4 border-orange-400 bg-orange-200 text-orange-700 text-4xl font-bold flex items-center justify-center shadow-md">
+                      {(form.fullName || "User")
+                        .split(" ")
+                        .map((part) => part[0])
+                        .join("")
+                        .slice(0, 2)
+                        .toUpperCase()}
+                    </div>
+                  )}
+                </div>
+
+                <h2 className="text-xl font-bold text-black mb-4">{form.fullName || "Your Profile"}</h2>
+
+                <label
+                  htmlFor="profileImage"
+                  className="cursor-pointer rounded-lg bg-orange-500 px-4 py-2 text-white font-semibold hover:bg-orange-600 transition"
+                >
+                  Change Photo
+                </label>
+                <input
+                  id="profileImage"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="hidden"
                 />
-              )}
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <p className="text-sm text-gray-500 mt-1">
-                Leave empty to keep current image
-              </p>
+              </div>
             </div>
 
             <div className="mb-4">
-              <label className="block text-gray-700 font-semibold mb-2">
+              <label className="block text-black font-semibold mb-2">
                 Full Name
               </label>
               <input
@@ -165,13 +187,13 @@ export default function UserProfilePage() {
                 onChange={(e) =>
                   setForm({ ...form, fullName: e.target.value })
                 }
-                className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-orange-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500 text-black"
                 required
               />
             </div>
 
             <div className="mb-4">
-              <label className="block text-gray-700 font-semibold mb-2">
+              <label className="block text-black font-semibold mb-2">
                 Username
               </label>
               <input
@@ -180,26 +202,26 @@ export default function UserProfilePage() {
                 onChange={(e) =>
                   setForm({ ...form, username: e.target.value })
                 }
-                className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-orange-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500 text-black"
                 required
               />
             </div>
 
             <div className="mb-4">
-              <label className="block text-gray-700 font-semibold mb-2">
+              <label className="block text-black font-semibold mb-2">
                 Email
               </label>
               <input
                 type="email"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-orange-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500 text-black"
                 required
               />
             </div>
 
             <div className="mb-6">
-              <label className="block text-gray-700 font-semibold mb-2">
+              <label className="block text-black font-semibold mb-2">
                 Phone Number
               </label>
               <input
@@ -208,7 +230,7 @@ export default function UserProfilePage() {
                 onChange={(e) =>
                   setForm({ ...form, phoneNumber: e.target.value })
                 }
-                className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-orange-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500 text-black"
                 required
               />
             </div>
@@ -217,7 +239,7 @@ export default function UserProfilePage() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded disabled:opacity-50"
+                className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded disabled:opacity-50"
               >
                 {submitting ? "Updating..." : "Update Profile"}
               </button>
@@ -228,11 +250,11 @@ export default function UserProfilePage() {
             <h2 className="text-lg font-semibold mb-4">Account Information</h2>
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <p className="text-gray-600">Role</p>
+                <p className="text-black">Role</p>
                 <p className="font-semibold">{user?.role || "N/A"}</p>
               </div>
               <div>
-                <p className="text-gray-600">Member Since</p>
+                <p className="text-black">Member Since</p>
                 <p className="font-semibold">
                   {user?.createdAt
                     ? new Date(user.createdAt).toLocaleDateString()
