@@ -2,197 +2,271 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getUserData } from "@/lib/cookies";
+import { getUserData, setUserData } from "@/lib/cookies";
+import { guideApi } from "@/lib/api/guide";
 
-interface GuideProfile {
-  _id: string;
-  fullName: string;
-  email: string;
-  phoneNumber: string;
-  username: string;
-  imageUrl?: string;
-  role: string;
-  createdAt: string;
-}
-
-export default function GuideProfil() {
-  const [profile, setProfile] = useState<GuideProfile | null>(null);
-  const [loading, setLoading] = useState(true);
+export default function GuideProfilePage() {
   const router = useRouter();
+  const [guide, setGuide] = useState<any>(null);
+  const [form, setForm] = useState({
+    fullName: "",
+    email: "",
+    phone: "",
+    language: "",
+    experience: "",
+    city: "",
+    bio: "",
+  });
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   useEffect(() => {
-    const fetchProfile = async () => {
+    const fetchGuide = async () => {
       try {
         const userData = await getUserData();
-        if (userData) {
-          setProfile(userData as unknown as GuideProfile);
+        if (!userData) {
+          router.push("/login");
+          return;
         }
-      } catch (error) {
-        console.error("Failed to load profile:", error);
+
+        const currentGuide = userData.user || userData;
+        setGuide(currentGuide);
+        setForm({
+          fullName: currentGuide.fullName || "",
+          email: currentGuide.email || "",
+          phone: currentGuide.phone || currentGuide.phoneNumber || "",
+          language: currentGuide.language || "",
+          experience: currentGuide.experience || "",
+          city: currentGuide.city || "",
+          bio: currentGuide.bio || "",
+        });
+        if (currentGuide.profileImage) {
+          setPreview(currentGuide.profileImage);
+        }
+      } catch (_err) {
+        router.push("/login");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchProfile();
-  }, []);
+    fetchGuide();
+  }, [router]);
 
-  const handleLogout = () => {
-    // Clear cookies and redirect to login
-    document.cookie = "authToken=; max-age=0;";
-    document.cookie = "userData=; max-age=0;";
-    router.push("/login");
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    setImageFile(file);
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setPreview(event.target?.result as string);
+    };
+    reader.readAsDataURL(file);
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setSuccess("");
+
+    if (!guide?._id && !guide?.id) {
+      setError("Guide ID not found. Please login again.");
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      const payload = new FormData();
+      payload.append("fullName", form.fullName);
+      payload.append("email", form.email);
+      payload.append("phone", form.phone);
+      payload.append("language", form.language);
+      payload.append("experience", form.experience);
+      payload.append("city", form.city);
+      payload.append("bio", form.bio);
+
+      if (imageFile) {
+        payload.append("profileImage", imageFile);
+      }
+
+      const response = await guideApi.updateGuideProfile(guide._id || guide.id, payload);
+
+      if (response.success) {
+        setSuccess("Profile updated successfully!");
+        const updatedGuide = response.data;
+        localStorage.setItem("guide_data", JSON.stringify(updatedGuide));
+        localStorage.setItem("user_data", JSON.stringify(updatedGuide));
+        await setUserData(updatedGuide);
+      }
+    } catch (err: any) {
+      setError(err.message || "Failed to update guide profile");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
-
-  if (!profile) {
-    return (
-      <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
-        Failed to load profile information.
-      </div>
-    );
+    return <div className="text-center py-8 text-black">Loading...</div>;
   }
 
   return (
-    <div className="max-w-2xl">
-      <div className="bg-white rounded-lg shadow-lg p-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-800">My Profile</h1>
-          <p className="text-gray-600 mt-2">Guide Account Details</p>
-        </div>
+    <div className="min-h-screen bg-orange-50 py-8">
+      <div className="max-w-3xl mx-auto px-4">
+        <div className="bg-white rounded-2xl shadow-lg p-8 border border-orange-200">
+          <div className="mb-6">
+            <h1 className="text-3xl font-bold text-orange-700">Guide Profile</h1>
+          </div>
 
-        {/* Profile Image */}
-        <div className="mb-8 flex justify-center">
-          <div className="relative">
-            {profile.imageUrl ? (
-              <img
-                src={profile.imageUrl}
-                alt={profile.fullName}
-                className="w-32 h-32 rounded-full object-cover border-4 border-blue-600"
-              />
-            ) : (
-              <div className="w-32 h-32 rounded-full bg-linear-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-4xl font-bold">
-                {profile.fullName
-                  .split(" ")
-                  .map((n) => n[0])
-                  .join("")
-                  .toUpperCase()}
+          {error && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+              {error}
+            </div>
+          )}
+
+          {success && (
+            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+              {success}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit}>
+            <div className="mb-8 rounded-2xl border border-orange-200 bg-linear-to-br from-orange-50 to-white p-6">
+              <div className="flex flex-col items-center text-center">
+                {preview ? (
+                  <img
+                    src={preview}
+                    alt="Guide profile"
+                    className="w-36 h-36 rounded-full object-cover border-4 border-orange-400 shadow-md mb-3"
+                  />
+                ) : (
+                  <div className="w-36 h-36 rounded-full bg-orange-200 text-orange-700 flex items-center justify-center text-4xl font-bold border-4 border-orange-400 shadow-md mb-3">
+                    {form.fullName
+                      ? form.fullName
+                          .split(" ")
+                          .map((n) => n[0])
+                          .join("")
+                          .slice(0, 2)
+                          .toUpperCase()
+                      : "G"}
+                  </div>
+                )}
+
+                <h2 className="text-xl font-bold text-black mb-4">{form.fullName || "Guide Profile"}</h2>
+
+                <label
+                  htmlFor="guideProfileImage"
+                  className="cursor-pointer rounded-lg bg-orange-500 px-4 py-2 text-white font-semibold hover:bg-orange-600 transition"
+                >
+                  Change Photo
+                </label>
+                <input
+                  id="guideProfileImage"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="hidden"
+                />
               </div>
-            )}
-          </div>
+            </div>
+
+            <div className="rounded-2xl border border-orange-100 bg-white p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-black font-semibold mb-2">Full Name</label>
+                <input
+                  type="text"
+                  value={form.fullName}
+                  onChange={(e) => setForm({ ...form, fullName: e.target.value })}
+                  className="w-full px-4 py-2 border border-orange-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-400 text-black"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-black font-semibold mb-2">Email</label>
+                <input
+                  type="email"
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  className="w-full px-4 py-2 border border-orange-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-400 text-black"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-black font-semibold mb-2">Phone</label>
+                <input
+                  type="text"
+                  value={form.phone}
+                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                  className="w-full px-4 py-2 border border-orange-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-400 text-black"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-black font-semibold mb-2">Language</label>
+                <input
+                  type="text"
+                  value={form.language}
+                  onChange={(e) => setForm({ ...form, language: e.target.value })}
+                  className="w-full px-4 py-2 border border-orange-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-400 text-black"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-black font-semibold mb-2">Experience</label>
+                <input
+                  type="text"
+                  value={form.experience}
+                  onChange={(e) => setForm({ ...form, experience: e.target.value })}
+                  className="w-full px-4 py-2 border border-orange-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-400 text-black"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-black font-semibold mb-2">City</label>
+                <input
+                  type="text"
+                  value={form.city}
+                  onChange={(e) => setForm({ ...form, city: e.target.value })}
+                  className="w-full px-4 py-2 border border-orange-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-400 text-black"
+                  required
+                />
+              </div>
+              </div>
+
+              <div className="mt-4">
+                <label className="block text-black font-semibold mb-2">Bio</label>
+                <textarea
+                  value={form.bio}
+                  onChange={(e) => setForm({ ...form, bio: e.target.value })}
+                  rows={4}
+                  className="w-full px-4 py-2 border border-orange-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-400 text-black"
+                />
+              </div>
+
+              <div className="mt-6">
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded disabled:opacity-60"
+                >
+                  {submitting ? "Updating..." : "Update Profile"}
+                </button>
+              </div>
+            </div>
+          </form>
         </div>
-
-        {/* Profile Information */}
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="border-b pb-4">
-              <label className="text-sm font-semibold text-gray-600 block mb-2">
-                Full Name
-              </label>
-              <p className="text-lg text-gray-800">{profile.fullName}</p>
-            </div>
-
-            <div className="border-b pb-4">
-              <label className="text-sm font-semibold text-gray-600 block mb-2">
-                Username
-              </label>
-              <p className="text-lg text-gray-800">@{profile.username}</p>
-            </div>
-
-            <div className="border-b pb-4">
-              <label className="text-sm font-semibold text-gray-600 block mb-2">
-                Email Address
-              </label>
-              <p className="text-lg text-gray-800">{profile.email}</p>
-            </div>
-
-            <div className="border-b pb-4">
-              <label className="text-sm font-semibold text-gray-600 block mb-2">
-                Phone Number
-              </label>
-              <p className="text-lg text-gray-800">{profile.phoneNumber}</p>
-            </div>
-
-            <div className="border-b pb-4">
-              <label className="text-sm font-semibold text-gray-600 block mb-2">
-                Account Type
-              </label>
-              <p className="text-lg text-gray-800">
-                <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">
-                  {profile.role === "guide" ? "Guide" : profile.role}
-                </span>
-              </p>
-            </div>
-
-            <div className="border-b pb-4">
-              <label className="text-sm font-semibold text-gray-600 block mb-2">
-                Member Since
-              </label>
-              <p className="text-lg text-gray-800">
-                {formatDate(profile.createdAt)}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="mt-8 flex gap-4">
-          <button
-            onClick={() => router.push("/guide/edit-profile")}
-            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-semibold transition"
-          >
-            Edit Profile
-          </button>
-          <button
-            onClick={handleLogout}
-            className="flex-1 bg-red-600 hover:bg-red-700 text-white py-3 px-6 rounded-lg font-semibold transition"
-          >
-            Logout
-          </button>
-        </div>
-      </div>
-
-      {/* Additional Information */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mt-6">
-        <h2 className="text-lg font-semibold text-blue-900 mb-3">
-          Guide Information
-        </h2>
-        <ul className="space-y-2 text-blue-800">
-          <li className="flex items-start">
-            <span className="mr-3">✓</span>
-            <span>You are registered as a guide and can accept booking requests</span>
-          </li>
-          <li className="flex items-start">
-            <span className="mr-3">✓</span>
-            <span>View all incoming booking requests in the Booking Requests page</span>
-          </li>
-          <li className="flex items-start">
-            <span className="mr-3">✓</span>
-            <span>
-              Approve or decline guest requests based on your availability
-            </span>
-          </li>
-          <li className="flex items-start">
-            <span className="mr-3">✓</span>
-            <span>Update your profile information anytime</span>
-          </li>
-        </ul>
       </div>
     </div>
   );

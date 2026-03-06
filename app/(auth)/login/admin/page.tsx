@@ -31,8 +31,7 @@ export default function AdminLoginPage() {
         }
 
         // Verify it's an admin login
-        const user = response.data?.user;
-        if (user?.role !== "admin") {
+        if (response.data?.role !== "admin") {
           setError(
             `This account does not have admin access. Please use the appropriate login page.`
           );

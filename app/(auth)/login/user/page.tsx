@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { authAPI } from "@/lib/api/auth";
+import { handleLogin } from "@/lib/actions/auth-action";
 
 export default function UserLoginPage() {
   const router = useRouter();
@@ -33,17 +34,24 @@ export default function UserLoginPage() {
 
     try {
       setLoading(true);
-      const response = await authAPI.loginUser(formData);
+      const response = await handleLogin({ ...formData, role: "user" });
 
       if (response.success) {
-        authAPI.setToken(response.data.token, "user");
+        if (response.data?.token) {
+          authAPI.setToken(response.data.token, "user");
+        }
         localStorage.setItem("user_data", JSON.stringify(response.data));
         alert("Login successful!");
-        router.push("/user/dashboard");
+        router.push(response.redirectUrl || "/user/dashboard");
       }
     } catch (err: any) {
       console.error(err);
-      setError(err.response?.data?.message || "Login failed. Please try again.");
+      const message = err.message || "Login failed. Please try again.";
+      if (message.toLowerCase().includes("invalid email or password")) {
+        setError("No guest account found with these credentials. Please register as guest first.");
+      } else {
+        setError(message);
+      }
     } finally {
       setLoading(false);
     }
