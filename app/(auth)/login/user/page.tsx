@@ -107,7 +107,7 @@ export default function UserLoginPage() {
 
         <p className="text-center text-gray-600 mt-6 text-sm">
           Don't have an account?{" "}
-          <Link href="/register/user" className="text-blue-600 font-semibold hover:underline">
+          <Link href="/register" className="text-blue-600 font-semibold hover:underline">
             Register here
           </Link>
         </p>

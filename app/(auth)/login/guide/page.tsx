@@ -110,7 +110,7 @@ export default function GuideLoginPage() {
 
         <p className="text-center text-gray-600 mt-6 text-sm">
           Don't have an account?{" "}
-          <Link href="/register/guide" className="text-orange-600 font-semibold hover:underline">
+          <Link href="/register" className="text-orange-600 font-semibold hover:underline">
             Register here
           </Link>
         </p>

@@ -7,7 +7,7 @@ export default function RegisterPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
       <div className="bg-white rounded-3xl shadow-2xl flex flex-col md:flex-row w-full max-w-5xl overflow-hidden">
 
-        <div className="w-full md:w-1/2 p-10 flex flex-col items-center justify-center bg-gradient-to-br from-purple-100 to-green-150 text-gray-800">
+        <div className="w-full md:w-1/2 p-10 flex flex-col items-center justify-center bg-linear-to-br from-purple-100 to-green-150 text-gray-800">
           <h2 className="text-3xl md:text-4xl font-extrabold mb-4 text-center drop-shadow-sm">
             Register now and explore the beauty of Nepal like never before.
           </h2>
