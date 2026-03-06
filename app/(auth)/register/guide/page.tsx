@@ -124,7 +124,7 @@ export default function GuideRegisterPage() {
                 onChange={handleChange}
                 required
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-                placeholder="+1 (555) 000-0000"
+                placeholder="+977 98XXXXXXXX"
               />
             </div>
 

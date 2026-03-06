@@ -53,7 +53,7 @@ export default function GuideLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-orange-50 via-white to-orange-50 flex items-center justify-center p-6">
+    <div className="min-h-screen bg-linear-to-br from-amber-100 to-rose-200 flex items-center justify-center p-6">
       <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-800 mb-2">Guide Login</h1>

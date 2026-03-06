@@ -38,12 +38,12 @@ export default function HomePage() {
               alt="Scenic view of Nepal"
               width={1200}
               height={800}
-              className="h-full min-h-64 w-full object-cover"
+              className="h-full min-h-64 w-full object-cover object-center transition duration-500 hover:scale-105"
               priority
             />
             <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/55 to-transparent p-4">
               <p className="text-sm font-medium text-white md:text-base">
-                Start your next unforgettable journey in Nepal.
+                Nepal is calling. Begin your adventure today.
               </p>
             </div>
           </div>
