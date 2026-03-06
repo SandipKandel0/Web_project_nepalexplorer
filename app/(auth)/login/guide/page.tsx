@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { authAPI } from "@/lib/api/auth";
-import { setAuthToken, setUserData } from "@/lib/cookies";
 
 export default function GuideLoginPage() {
   const router = useRouter();
@@ -39,16 +38,9 @@ export default function GuideLoginPage() {
       if (response.success) {
         // Add role to the data
         const guideData = { ...response.data, role: "guide" };
-        
-        // Store token and data in localStorage
         authAPI.setToken(response.data.token, "guide");
         localStorage.setItem("guide_data", JSON.stringify(guideData));
-        localStorage.setItem("user_data", JSON.stringify(guideData));
-        
-        // Also set cookies for server-side middleware
-        await setAuthToken(response.data.token);
-        await setUserData(guideData);
-        
+        localStorage.setItem("user_data", JSON.stringify(guideData)); // For unified access
         alert("Login successful!");
         router.push("/guide/dashboard");
       }

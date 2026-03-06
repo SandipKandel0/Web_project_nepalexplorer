@@ -5,16 +5,19 @@ import { guideApi } from "@/lib/api/guide";
 
 interface GuideRequest {
   _id: string;
-  guestId: string;
-  guestName: string;
-  guestEmail: string;
-  guestPhone: string;
+  guideId: string;
+  userId: string;
+  userDetails: {
+    fullName: string;
+    email: string;
+    phoneNumber: string;
+  };
   tripDate: string;
   duration: number;
   location: string;
   numberOfPeople: number;
-  language: string;
-  customMessage?: string;
+  budget: number;
+  description: string;
   status: "pending" | "approved" | "declined";
   createdAt: string;
 }
@@ -33,19 +36,11 @@ export default function GuideRequestsPage() {
     try {
       setLoading(true);
       const data = await guideApi.getGuideRequests();
-      
-      // Ensure data is an array
-      if (Array.isArray(data)) {
-        setRequests(data);
-      } else {
-        console.error("Expected array but got:", data);
-        setRequests([]);
-      }
+      setRequests(data);
       setError(null);
     } catch (err) {
       setError("Failed to load booking requests");
       console.error(err);
-      setRequests([]);
     } finally {
       setLoading(false);
     }
@@ -188,19 +183,19 @@ export default function GuideRequestsPage() {
                       <div>
                         <span className="text-gray-600">Name:</span>
                         <p className="font-medium text-gray-800">
-                          {request.guestName}
+                          {request.userDetails.fullName}
                         </p>
                       </div>
                       <div>
                         <span className="text-gray-600">Email:</span>
                         <p className="font-medium text-gray-800">
-                          {request.guestEmail}
+                          {request.userDetails.email}
                         </p>
                       </div>
                       <div>
                         <span className="text-gray-600">Phone:</span>
                         <p className="font-medium text-gray-800">
-                          {request.guestPhone}
+                          {request.userDetails.phoneNumber}
                         </p>
                       </div>
                     </div>
@@ -238,24 +233,22 @@ export default function GuideRequestsPage() {
                         </p>
                       </div>
                       <div>
-                        <span className="text-gray-600">Language:</span>
+                        <span className="text-gray-600">Budget (NPR):</span>
                         <p className="font-medium text-gray-800">
-                          {request.language}
+                          Rs. {request.budget.toLocaleString()}
                         </p>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Custom Message */}
-                {request.customMessage && (
-                  <div className="mt-4 pt-4 border-t">
-                    <p className="text-gray-600 text-sm mb-2">Guest Message:</p>
-                    <p className="text-gray-800 bg-gray-50 p-3 rounded">
-                      {request.customMessage}
-                    </p>
-                  </div>
-                )}
+                {/* Description */}
+                <div className="mt-4 pt-4 border-t">
+                  <p className="text-gray-600 text-sm mb-2">Description:</p>
+                  <p className="text-gray-800 bg-gray-50 p-3 rounded">
+                    {request.description}
+                  </p>
+                </div>
 
                 {/* Actions */}
                 <div className="mt-4 flex gap-3">
@@ -301,19 +294,19 @@ export default function GuideRequestsPage() {
                       <div>
                         <span className="text-gray-600">Name:</span>
                         <p className="font-medium text-gray-800">
-                          {request.guestName}
+                          {request.userDetails.fullName}
                         </p>
                       </div>
                       <div>
                         <span className="text-gray-600">Email:</span>
                         <p className="font-medium text-gray-800">
-                          {request.guestEmail}
+                          {request.userDetails.email}
                         </p>
                       </div>
                       <div>
                         <span className="text-gray-600">Phone:</span>
                         <p className="font-medium text-gray-800">
-                          {request.guestPhone}
+                          {request.userDetails.phoneNumber}
                         </p>
                       </div>
                     </div>
@@ -344,9 +337,9 @@ export default function GuideRequestsPage() {
                         </p>
                       </div>
                       <div>
-                        <span className="text-gray-600">Language:</span>
+                        <span className="text-gray-600">Budget (NPR):</span>
                         <p className="font-medium text-gray-800">
-                          {request.language}
+                          Rs. {request.budget.toLocaleString()}
                         </p>
                       </div>
                     </div>
@@ -379,7 +372,7 @@ export default function GuideRequestsPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <p className="font-medium text-gray-800">
-                      {request.guestName}
+                      {request.userDetails.fullName}
                     </p>
                     <p className="text-sm text-gray-600">
                       {request.location} - {formatDate(request.tripDate)}

@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { ReactNode } from "react";
-import { handleLogout } from "@/lib/actions/auth-action";
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
   return (
@@ -17,19 +16,17 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
               Users Management
             </Link>
             <Link
-              href="/admin/destinations"
+              href="/admin/users/create"
               className="block px-4 py-2 rounded hover:bg-slate-700 transition"
             >
-              Upload Destinations
+              Create User
             </Link>
-            <form action={handleLogout}>
-              <button
-                type="submit"
-                className="w-full text-left px-4 py-2 rounded hover:bg-slate-700 transition"
-              >
-                Logout
-              </button>
-            </form>
+            <Link
+              href="/user/profile"
+              className="block px-4 py-2 rounded hover:bg-slate-700 transition"
+            >
+              My Profile
+            </Link>
           </nav>
         </aside>
 

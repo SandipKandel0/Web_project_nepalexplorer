@@ -39,11 +39,6 @@ export const API = {
         GET_USER: '/admin/users/:id',
         UPDATE_USER: '/admin/users/:id',
         DELETE_USER: '/admin/users/:id',
-        DESTINATIONS: '/admin/destinations',
-        DELETE_DESTINATION: '/admin/destinations/:id',
-        UPDATE_DESTINATION: '/admin/destinations/:id',
-        GUIDES: '/admin/guides',
-        DELETE_GUIDE: '/admin/guides/:id',
     },
     GUIDE: {
         CREATE_REQUEST: '/guide/requests',
@@ -56,15 +51,10 @@ export const API = {
         DELETE_REQUEST: '/guide/requests/:id',
     },
     NOTIFICATION: {
-        // Guide notifications
-        GUIDE_GET_NOTIFICATIONS: '/guide/notifications',
-        GUIDE_GET_UNREAD_COUNT: '/guide/notifications/unread-count',
-        GUIDE_MARK_AS_READ: '/guide/notifications/:id/read',
-        GUIDE_MARK_ALL_READ: '/guide/notifications/mark-all-read',
-        GUIDE_DELETE_NOTIFICATION: '/guide/notifications/:id',
-        // User notifications
-        USER_GET_NOTIFICATIONS: '/user/notifications',
-        USER_MARK_AS_READ: '/user/notifications/:id/read',
-        USER_DELETE_NOTIFICATION: '/user/notifications/:id',
+        GET_NOTIFICATIONS: '/guide/notifications',
+        GET_UNREAD_COUNT: '/guide/notifications/unread-count',
+        MARK_AS_READ: '/guide/notifications/:id/read',
+        MARK_ALL_READ: '/guide/notifications/mark-all-read',
+        DELETE_NOTIFICATION: '/guide/notifications/:id',
     }
 }

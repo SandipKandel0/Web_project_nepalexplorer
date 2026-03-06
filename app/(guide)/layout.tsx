@@ -3,7 +3,6 @@
 import { ReactNode, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import GuideNotificationsDropdown from "./guide/_components/GuideNotificationsDropdown";
 
 export default function GuideLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -56,11 +55,6 @@ export default function GuideLayout({ children }: { children: ReactNode }) {
               </Link>
             </div>
 
-            {/* Right Side Icons */}
-            <div className="hidden md:flex items-center gap-4">
-              <GuideNotificationsDropdown />
-            </div>
-
             {/* Mobile Menu Button */}
             <button
               className="md:hidden text-gray-700 hover:text-orange-600"
@@ -88,27 +82,21 @@ export default function GuideLayout({ children }: { children: ReactNode }) {
               <Link
                 href="/guide/dashboard"
                 className="block py-2 px-4 text-gray-700 hover:bg-orange-50 hover:text-orange-600 rounded"
-                onClick={() => setIsMobileMenuOpen(false)}
               >
                 🏠 Home
               </Link>
               <Link
                 href="/guide/requests"
                 className="block py-2 px-4 text-gray-700 hover:bg-orange-50 hover:text-orange-600 rounded"
-                onClick={() => setIsMobileMenuOpen(false)}
               >
                 📋 Requests
               </Link>
               <Link
                 href="/guide/profile"
                 className="block py-2 px-4 text-gray-700 hover:bg-orange-50 hover:text-orange-600 rounded"
-                onClick={() => setIsMobileMenuOpen(false)}
               >
                 👤 Profile
               </Link>
-              <div className="py-2 px-4 border-t border-gray-200 mt-2">
-                <GuideNotificationsDropdown />
-              </div>
             </div>
           )}
         </div>

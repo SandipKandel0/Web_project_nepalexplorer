@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { authAPI } from "@/lib/api/auth";
-import { guideApi } from "@/lib/api/guide";
 
 interface UserData {
   id: string;
@@ -17,9 +16,6 @@ export default function UserDashboard() {
   const router = useRouter();
   const [user, setUser] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [bookingCount, setBookingCount] = useState(0);
-  const [favouriteCount, setFavouriteCount] = useState(0);
-  const [destinationCount, setDestinationCount] = useState(0);
 
   useEffect(() => {
     // Check if user is authenticated
@@ -33,41 +29,8 @@ export default function UserDashboard() {
     if (userData) {
       setUser(JSON.parse(userData));
     }
-
-    // Fetch bookings
-    fetchDashboardData();
+    setLoading(false);
   }, [router]);
-
-  const fetchDashboardData = async () => {
-    try {
-      setLoading(true);
-      
-      // Fetch guide requests (bookings made by user)
-      const requests = await guideApi.getMyGuideRequests();
-      if (Array.isArray(requests)) {
-        setBookingCount(requests.length);
-        
-        // Count unique destinations from bookings
-        const destinations = new Set(requests.map((r: any) => r.location));
-        setDestinationCount(destinations.size);
-      }
-
-      // Fetch favourites from localStorage
-      const favs = localStorage.getItem("favorite_destinations");
-      if (favs) {
-        try {
-          const favArray = JSON.parse(favs);
-          setFavouriteCount(favArray.length);
-        } catch (e) {
-          setFavouriteCount(0);
-        }
-      }
-    } catch (err) {
-      console.error("Failed to fetch dashboard data:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   if (loading) {
     return <div className="h-screen flex items-center justify-center">Loading...</div>;
@@ -90,19 +53,19 @@ export default function UserDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
           <div className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition">
             <h3 className="text-xl font-semibold text-gray-700 mb-4">📊 Your Bookings</h3>
-            <p className="text-4xl font-bold text-blue-600 mb-2">{bookingCount}</p>
+            <p className="text-4xl font-bold text-blue-600 mb-2">0</p>
             <p className="text-gray-600 text-sm">Active bookings</p>
           </div>
 
           <div className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition">
             <h3 className="text-xl font-semibold text-gray-700 mb-4">❤️ Favourites</h3>
-            <p className="text-4xl font-bold text-red-600 mb-2">{favouriteCount}</p>
+            <p className="text-4xl font-bold text-red-600 mb-2">0</p>
             <p className="text-gray-600 text-sm">Favourite guides</p>
           </div>
 
           <div className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition">
             <h3 className="text-xl font-semibold text-gray-700 mb-4">🗺️ Destinations</h3>
-            <p className="text-4xl font-bold text-green-600 mb-2">{destinationCount}</p>
+            <p className="text-4xl font-bold text-green-600 mb-2">0</p>
             <p className="text-gray-600 text-sm">Visited places</p>
           </div>
         </div>
