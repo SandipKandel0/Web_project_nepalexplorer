@@ -15,7 +15,7 @@ export default function PublicLayout({ children }: { children: ReactNode }) {
   return (
     <>
       {!isAuthenticatedRoute && <Header />}
-      <main className={`min-h-screen bg-gray-50 ${!isAuthenticatedRoute ? 'p-6' : ''}`}>{children}</main>
+      <main className={`min-h-screen bg-rose-100 ${!isAuthenticatedRoute ? 'p-6' : ''}`}>{children}</main>
     </>
   );
 }
