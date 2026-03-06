@@ -1,6 +1,7 @@
 // GUIDE BOOKING & NOTIFICATION API CALLS
 import { API } from "./endpoints";
 import axiosInstance from "./axios";
+import { GUIDE_ENDPOINTS } from "./endpoints";
 
 // Helper to get token from localStorage
 const getToken = () => {
@@ -44,7 +45,7 @@ export const getMyGuideRequests = async () => {
         },
       }
     );
-    return response.data;
+    return response.data?.data ?? [];
   } catch (err: Error | any) {
     throw new Error(
       err.response?.data?.message || 
@@ -65,7 +66,7 @@ export const getGuideRequests = async () => {
         },
       }
     );
-    return response.data;
+    return response.data?.data ?? [];
   } catch (err: Error | any) {
     throw new Error(
       err.response?.data?.message || 
@@ -86,7 +87,7 @@ export const getMyRequestedGuides = async () => {
         },
       }
     );
-    return response.data;
+    return response.data?.data ?? [];
   } catch (err: Error | any) {
     throw new Error(
       err.response?.data?.message || 
@@ -107,7 +108,7 @@ export const getGuideRequest = async (id: string) => {
         },
       }
     );
-    return response.data;
+    return response.data?.data;
   } catch (err: Error | any) {
     throw new Error(
       err.response?.data?.message || 
@@ -120,7 +121,7 @@ export const getGuideRequest = async (id: string) => {
 export const approveGuideRequest = async (id: string) => {
   try {
     const token = getToken();
-    const response = await axiosInstance.put(
+    const response = await axiosInstance.patch(
       API.GUIDE.APPROVE_REQUEST.replace(":id", id),
       {},
       {
@@ -142,7 +143,7 @@ export const approveGuideRequest = async (id: string) => {
 export const declineGuideRequest = async (id: string) => {
   try {
     const token = getToken();
-    const response = await axiosInstance.put(
+    const response = await axiosInstance.patch(
       API.GUIDE.DECLINE_REQUEST.replace(":id", id),
       {},
       {
@@ -290,6 +291,29 @@ export const deleteNotification = async (id: string) => {
   }
 };
 
+export const updateGuideProfile = async (guideId: string, formData: FormData) => {
+  try {
+    const token = getToken();
+    const response = await axiosInstance.put(
+      GUIDE_ENDPOINTS.UPDATE_PROFILE(guideId),
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    return response.data;
+  } catch (err: Error | any) {
+    throw new Error(
+      err.response?.data?.message ||
+      err.message ||
+      "Failed to update guide profile"
+    );
+  }
+};
+
 // Export all guide API methods as a namespace
 export const guideApi = {
   createGuideRequest,
@@ -305,4 +329,5 @@ export const guideApi = {
   markNotificationAsRead,
   markAllNotificationsAsRead,
   deleteNotification,
+  updateGuideProfile,
 };

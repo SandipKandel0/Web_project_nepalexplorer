@@ -35,10 +35,11 @@ export const API = {
     },
     ADMIN: {
         USERS: '/admin/users',
-        CREATE_USER: '/admin/users',
         GET_USER: '/admin/users/:id',
         UPDATE_USER: '/admin/users/:id',
         DELETE_USER: '/admin/users/:id',
+      GUIDES: '/admin/guides',
+      DELETE_GUIDE: '/admin/guides/:id',
     },
     GUIDE: {
         CREATE_REQUEST: '/guide/requests',

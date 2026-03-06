@@ -15,8 +15,23 @@ try {
     // 1️⃣ Validate FIRST (confirmPassword required here)
     const parsed = registerSchema.parse(data);
 
-    // 2️⃣ Remove confirmPassword BEFORE backend
-    const { confirmPassword, ...payload } = parsed;
+    // 2️⃣ Map form fields to backend contract
+    const basePayload = {
+      fullName: parsed.fullName,
+      email: parsed.email,
+      password: parsed.password,
+      confirmPassword: parsed.confirmPassword,
+      phone: parsed.phoneNumber,
+    };
+
+    const payload = parsed.isGuide
+      ? {
+          ...basePayload,
+          language: parsed.language,
+          experience: parsed.experience,
+          city: parsed.city,
+        }
+      : basePayload;
 
     // 3️⃣ Call backend API
     const response = await register(payload);
@@ -48,13 +63,16 @@ try {
 
     const response = await login(data);
     if (response.success) {
+    const requestedRole = data?.role;
+    const resolvedRole = response.data?.role || requestedRole;
 
     if (response.data.token) await setAuthToken(response.data.token);
-    if (response.data) await setUserData(response.data);
+    if (response.data) {
+      await setUserData({ ...response.data, role: resolvedRole });
+    }
 
-    // Determine redirect based on role
-    const user = response.data.user;
-    const userRole = user?.role;
+    // Determine redirect based on role from backend payload
+    const userRole = resolvedRole;
     let redirectUrl = "/user/dashboard"; // default
     
     if (userRole === "guide") {

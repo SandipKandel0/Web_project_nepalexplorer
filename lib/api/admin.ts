@@ -19,6 +19,22 @@ export const getAllUsers = async () => {
   }
 };
 
+export const getAllGuides = async () => {
+  try {
+    const token = await getAuthToken();
+    const response = await axiosInstance.get(API.ADMIN.GUIDES, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (err: Error | any) {
+    throw new Error(
+      err.response?.data?.message || err.message || "Failed to fetch guides"
+    );
+  }
+};
+
 export const getUserById = async (id: string) => {
   try {
     const token = await getAuthToken();
@@ -34,23 +50,6 @@ export const getUserById = async (id: string) => {
   } catch (err: Error | any) {
     throw new Error(
       err.response?.data?.message || err.message || "Failed to fetch user"
-    );
-  }
-};
-
-export const createUser = async (userData: FormData) => {
-  try {
-    const token = await getAuthToken();
-    const response = await axiosInstance.post(API.ADMIN.CREATE_USER, userData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "multipart/form-data",
-      },
-    });
-    return response.data;
-  } catch (err: Error | any) {
-    throw new Error(
-      err.response?.data?.message || err.message || "Failed to create user"
     );
   }
 };
@@ -91,6 +90,25 @@ export const deleteUser = async (id: string) => {
   } catch (err: Error | any) {
     throw new Error(
       err.response?.data?.message || err.message || "Failed to delete user"
+    );
+  }
+};
+
+export const deleteGuide = async (id: string) => {
+  try {
+    const token = await getAuthToken();
+    const response = await axiosInstance.delete(
+      API.ADMIN.DELETE_GUIDE.replace(":id", id),
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (err: Error | any) {
+    throw new Error(
+      err.response?.data?.message || err.message || "Failed to delete guide"
     );
   }
 };
