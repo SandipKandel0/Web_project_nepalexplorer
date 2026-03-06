@@ -28,13 +28,11 @@ function GuideBookedForm() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  // Fetch user data
   useEffect(() => {
     const userData = localStorage.getItem("user_data");
     if (userData) {
       const parsedUser = JSON.parse(userData);
       setUser(parsedUser);
-      // Pre-fill form with user data
       setForm((prev) => ({
         ...prev,
         name: parsedUser.fullName || "",
@@ -46,10 +44,10 @@ function GuideBookedForm() {
 
   useEffect(() => {
     if (destinationParam) {
-      setForm((prev) => ({ 
-        ...prev, 
+      setForm((prev) => ({
+        ...prev,
         destination: destinationParam,
-        location: destinationParam 
+        location: destinationParam,
       }));
     }
   }, [destinationParam]);
@@ -59,7 +57,6 @@ function GuideBookedForm() {
     setError("");
     setSuccess("");
 
-    // Validate form
     if (
       !form.name ||
       !form.email ||
@@ -105,10 +102,9 @@ function GuideBookedForm() {
           customMessage: "",
         });
 
-        // Redirect after delay
         setTimeout(() => {
           router.push("/user/dashboard");
-        }, 2000);
+        }, 1800);
       }
     } catch (err: any) {
       setError(err.message || "Failed to send guide request");
@@ -118,191 +114,172 @@ function GuideBookedForm() {
   };
 
   return (
-    <div>
-      <div className="mb-6">
-        <Link
-          href="/user/destinations"
-          className="text-blue-600 hover:text-blue-800 font-semibold"
-        >
-          ← Back to Destinations
-        </Link>
-      </div>
+    <div className="max-w-4xl mx-auto text-black py-6">
+      <div className="bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200">
+        <div className="h-28 bg-linear-to-r from-blue-500 to-blue-700"></div>
 
-      <div className="bg-white rounded-lg shadow p-8 max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold mb-2">📋 Book a Guide</h1>
-        <p className="text-gray-600 mb-6">
-          Fill in the details below to request a personal guide for your trip
-        </p>
-
-        {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-            {error}
-          </div>
-        )}
-
-        {success && (
-          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-            {success}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Name */}
-          <div>
-            <label className="block text-gray-700 font-semibold mb-2">
-              Full Name *
-            </label>
-            <input
-              type="text"
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-              placeholder="Enter your full name"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
+        <div className="px-6 pb-6 -mt-8">
+          <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm mb-6">
+            <h1 className="text-3xl font-bold text-black">Book a Guide</h1>
+            <p className="text-black mt-2">
+              Fill out your trip details and we will match you with the right local guide.
+            </p>
           </div>
 
-          {/* Email */}
-          <div>
-            <label className="block text-gray-700 font-semibold mb-2">
-              Email Address *
-            </label>
-            <input
-              type="email"
-              value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
-              placeholder="Enter your email"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-
-          {/* Phone */}
-          <div>
-            <label className="block text-gray-700 font-semibold mb-2">
-              Phone Number *
-            </label>
-            <input
-              type="tel"
-              value={form.phone}
-              onChange={(e) => setForm({ ...form, phone: e.target.value })}
-              placeholder="Enter your phone number"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-
-          {/* Destination */}
-          <div>
-            <label className="block text-gray-700 font-semibold mb-2">
-              Destination *
-            </label>
-            <input
-              type="text"
-              value={form.location}
-              onChange={(e) => setForm({ ...form, location: e.target.value })}
-              placeholder="e.g., Kathmandu, Pokhara, Everest Base Camp"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-
-          {/* Booking Date */}
-          <div>
-            <label className="block text-gray-700 font-semibold mb-2">
-              Booking Date *
-            </label>
-            <input
-              type="date"
-              value={form.bookingDate}
-              onChange={(e) => setForm({ ...form, bookingDate: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Trip Duration */}
-            <div>
-              <label className="block text-gray-700 font-semibold mb-2">
-                Trip Duration (days) *
-              </label>
-              <input
-                type="number"
-                min="1"
-                value={form.tripDuration}
-                onChange={(e) =>
-                  setForm({ ...form, tripDuration: parseInt(e.target.value) || 1 })
-                }
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
+          {error && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-5">
+              {error}
             </div>
+          )}
 
-            {/* Number of People */}
-            <div>
-              <label className="block text-gray-700 font-semibold mb-2">
-                Number of People *
-              </label>
-              <input
-                type="number"
-                min="1"
-                value={form.numberOfPeople}
-                onChange={(e) =>
-                  setForm({ ...form, numberOfPeople: parseInt(e.target.value) || 1 })
-                }
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
+          {success && (
+            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-5">
+              {success}
             </div>
-          </div>
+          )}
 
-          {/* Language */}
-          <div>
-            <label className="block text-gray-700 font-semibold mb-2">
-              Preferred Language *
-            </label>
-            <input
-              type="text"
-              value={form.language}
-              onChange={(e) => setForm({ ...form, language: e.target.value })}
-              placeholder="e.g., English, Nepali, Hindi"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
+          <form onSubmit={handleSubmit} className="space-y-8 bg-white border border-gray-200 rounded-xl p-5 md:p-6">
+            <section>
+              <h3 className="text-lg font-bold text-black mb-4">Your Information</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-black font-semibold mb-2">Full Name *</label>
+                  <input
+                    type="text"
+                    value={form.name}
+                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                    placeholder="Enter your full name"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                  />
+                </div>
 
-          {/* Custom Message */}
-          <div>
-            <label className="block text-gray-700 font-semibold mb-2">
-              Custom Message *
-            </label>
-            <textarea
-              value={form.customMessage}
-              onChange={(e) => setForm({ ...form, customMessage: e.target.value })}
-              placeholder="Tell us about your trip, interests, special requirements, and expectations..."
-              rows={5}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
+                <div>
+                  <label className="block text-black font-semibold mb-2">Email Address *</label>
+                  <input
+                    type="email"
+                    value={form.email}
+                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                    placeholder="Enter your email"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                  />
+                </div>
 
-          <div className="flex gap-4 pt-4">
-            <button
-              type="submit"
-              disabled={submitting}
-              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg disabled:opacity-50 font-semibold transition"
-            >
-              {submitting ? "Sending Request..." : "Send Booking Request"}
-            </button>
-            <Link
-              href="/user/destinations"
-              className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold transition flex items-center justify-center"
-            >
-              Cancel
-            </Link>
-          </div>
-        </form>
+                <div className="md:col-span-2">
+                  <label className="block text-black font-semibold mb-2">Phone Number *</label>
+                  <input
+                    type="tel"
+                    value={form.phone}
+                    onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                    placeholder="Enter your phone number"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                  />
+                </div>
+              </div>
+            </section>
+
+            <section>
+              <h3 className="text-lg font-bold text-black mb-4">Trip Details</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-black font-semibold mb-2">Destination *</label>
+                  <input
+                    type="text"
+                    value={form.location}
+                    onChange={(e) => setForm({ ...form, location: e.target.value })}
+                    placeholder="e.g., Kathmandu, Pokhara"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-black font-semibold mb-2">Booking Date *</label>
+                  <input
+                    type="date"
+                    value={form.bookingDate}
+                    onChange={(e) => setForm({ ...form, bookingDate: e.target.value })}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-black font-semibold mb-2">Trip Duration (days) *</label>
+                  <input
+                    type="number"
+                    min="1"
+                    value={form.tripDuration}
+                    onChange={(e) =>
+                      setForm({ ...form, tripDuration: parseInt(e.target.value) || 1 })
+                    }
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-black font-semibold mb-2">Number of People *</label>
+                  <input
+                    type="number"
+                    min="1"
+                    value={form.numberOfPeople}
+                    onChange={(e) =>
+                      setForm({ ...form, numberOfPeople: parseInt(e.target.value) || 1 })
+                    }
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                  />
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="block text-black font-semibold mb-2">Preferred Language *</label>
+                  <input
+                    type="text"
+                    value={form.language}
+                    onChange={(e) => setForm({ ...form, language: e.target.value })}
+                    placeholder="English, Nepali"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                  />
+                </div>
+              </div>
+            </section>
+
+            <section>
+              <h3 className="text-lg font-bold text-black mb-4">Message for Guide</h3>
+              <div>
+                <label className="block text-black font-semibold mb-2">Trip Notes / Custom Message *</label>
+                <textarea
+                  value={form.customMessage}
+                  onChange={(e) => setForm({ ...form, customMessage: e.target.value })}
+                  placeholder="Tell us your interests, pace, places you want to explore, and any special requirements."
+                  rows={6}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+              </div>
+            </section>
+
+            <div className="flex flex-col sm:flex-row gap-3 pt-2">
+              <button
+                type="submit"
+                disabled={submitting}
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl disabled:opacity-50 font-semibold transition"
+              >
+                {submitting ? "Sending Request..." : "Send Booking Request"}
+              </button>
+              <Link
+                href="/user/destinations"
+                className="sm:w-auto text-center bg-gray-900 hover:bg-black text-white px-6 py-3 rounded-xl font-semibold transition"
+              >
+                Cancel
+              </Link>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );
@@ -310,7 +287,7 @@ function GuideBookedForm() {
 
 export default function GuideBookedPage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<div className="text-black">Loading...</div>}>
       <GuideBookedForm />
     </Suspense>
   );

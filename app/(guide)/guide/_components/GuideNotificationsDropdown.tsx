@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { userApi } from "@/lib/api/user";
+import { guideApi } from "@/lib/api/guide";
 import { MdNotifications, MdClose, MdLogout } from "react-icons/md";
 
-export default function NotificationsDropdown() {
+export default function GuideNotificationsDropdown() {
   const router = useRouter();
   const [notifications, setNotifications] = useState<any[]>([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -23,10 +23,11 @@ export default function NotificationsDropdown() {
   const fetchNotifications = async () => {
     try {
       setLoading(true);
-      const response = await userApi.getNotifications();
+      const response = await guideApi.getNotifications();
       setNotifications(response.data || response || []);
       setError("");
     } catch (err: any) {
+      console.error("Failed to fetch notifications:", err);
       setError(err.message || "Failed to fetch notifications");
     } finally {
       setLoading(false);
@@ -36,7 +37,7 @@ export default function NotificationsDropdown() {
   const handleMarkAsRead = async (notificationId: string, e: React.MouseEvent) => {
     e.stopPropagation();
     try {
-      await userApi.markNotificationAsRead(notificationId);
+      await guideApi.markNotificationAsRead(notificationId);
       setNotifications((prev) =>
         prev.map((n) =>
           n._id === notificationId ? { ...n, read: true } : n
@@ -50,7 +51,7 @@ export default function NotificationsDropdown() {
   const handleDelete = async (notificationId: string, e: React.MouseEvent) => {
     e.stopPropagation();
     try {
-      await userApi.deleteNotification(notificationId);
+      await guideApi.deleteNotification(notificationId);
       setNotifications((prev) => prev.filter((n) => n._id !== notificationId));
     } catch (err) {
       console.error("Failed to delete notification");
@@ -58,15 +59,14 @@ export default function NotificationsDropdown() {
   };
 
   const handleLogout = () => {
-    // Clear all user data from localStorage
+    // Clear all guide data from localStorage
     localStorage.removeItem("user_data");
     localStorage.removeItem("guide_data");
     localStorage.removeItem("user_token");
     localStorage.removeItem("guide_token");
-    localStorage.removeItem("favorite_destinations");
     
-    // Redirect to login page
-    router.push("/login/user");
+    // Redirect to guide login page
+    router.push("/login/guide");
   };
 
   return (
@@ -74,7 +74,7 @@ export default function NotificationsDropdown() {
       {/* Bell Icon */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 text-gray-700 hover:text-blue-600"
+        className="relative p-2 text-gray-700 hover:text-orange-600"
       >
         <MdNotifications size={24} />
         {unreadCount > 0 && (
@@ -111,16 +111,16 @@ export default function NotificationsDropdown() {
                 <div
                   key={notification._id}
                   className={`border-b p-4 hover:bg-gray-50 transition cursor-pointer ${
-                    !notification.read ? "bg-blue-50" : ""
+                    !notification.read ? "bg-orange-50" : ""
                   }`}
-                  onClick={() => handleMarkAsRead(notification._id, {} as any)}
+                  onClick={(e) => handleMarkAsRead(notification._id, e)}
                 >
                   <div className="flex justify-between items-start gap-2">
                     <div className="flex-1">
                       <p className="font-semibold text-sm capitalize">
-                        {notification.type === "approval" && "✅ Request Approved"}
-                        {notification.type === "decline" && "❌ Request Declined"}
-                        {notification.type === "new_request" && "📩 New Request"}
+                        {notification.type === "new_booking" && "📩 New Booking Request"}
+                        {notification.type === "booking_update" && "🔄 Booking Updated"}
+                        {notification.type === "system" && "ℹ️ System Notification"}
                       </p>
                       <p className="text-sm text-gray-700">
                         {notification.message}
@@ -145,7 +145,7 @@ export default function NotificationsDropdown() {
           <div className="border-t">
             {notifications.length > 0 && (
               <div className="p-3 text-center border-b">
-                <button className="text-blue-600 hover:text-blue-800 text-sm font-semibold">
+                <button className="text-orange-600 hover:text-orange-800 text-sm font-semibold">
                   View All Notifications
                 </button>
               </div>

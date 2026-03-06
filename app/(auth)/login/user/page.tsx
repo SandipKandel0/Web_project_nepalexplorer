@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { authAPI } from "@/lib/api/auth";
+import { setAuthToken, setUserData } from "@/lib/cookies";
 
 export default function UserLoginPage() {
   const router = useRouter();
@@ -36,10 +37,23 @@ export default function UserLoginPage() {
       const response = await authAPI.loginUser(formData);
 
       if (response.success) {
+        const resolvedRole = response.data?.role || "user";
+        const userData = { ...response.data, role: resolvedRole };
+        
+        // Store token and data in localStorage
         authAPI.setToken(response.data.token, "user");
-        localStorage.setItem("user_data", JSON.stringify(response.data));
+        localStorage.setItem("user_data", JSON.stringify(userData));
+        
+        // Also set cookies for server-side middleware
+        await setAuthToken(response.data.token);
+        await setUserData(userData);
+        
         alert("Login successful!");
-        router.push("/user/dashboard");
+        if (resolvedRole === "admin") {
+          router.push("/admin/users");
+        } else {
+          router.push("/user/dashboard");
+        }
       }
     } catch (err: any) {
       console.error(err);
@@ -48,6 +62,7 @@ export default function UserLoginPage() {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-blue-50 flex items-center justify-center p-6">
@@ -104,6 +119,7 @@ export default function UserLoginPage() {
             {loading ? "Signing in..." : "Sign In"}
           </button>
         </form>
+
 
         <p className="text-center text-gray-600 mt-6 text-sm">
           Don't have an account?{" "}

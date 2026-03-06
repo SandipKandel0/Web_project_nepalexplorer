@@ -54,7 +54,7 @@ try {
 
     // Determine redirect based on role
     const user = response.data.user;
-    const userRole = user?.role;
+    const userRole = user?.role || response.data?.role;
     let redirectUrl = "/user/dashboard"; // default
     
     if (userRole === "guide") {
