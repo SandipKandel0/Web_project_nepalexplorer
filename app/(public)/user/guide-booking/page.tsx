@@ -90,15 +90,17 @@ export default function GuideBookingPage() {
   };
 
   return (
-    <div>
+    <div className="min-h-screen bg-linear-to-br from-orange-50 via-amber-50 to-white py-8 px-4">
+      <div className="max-w-4xl mx-auto">
       <div className="mb-6">
-        <Link href="/user/dashboard" className="text-blue-600 hover:text-blue-800">
-          ← Back to Dashboard
+        <Link href="/user/dashboard" className="inline-flex items-center gap-2 rounded-full bg-white border border-orange-200 px-4 py-2 text-orange-700 hover:bg-orange-100 font-semibold transition">
+          <span>←</span>
+          <span>Back to Dashboard</span>
         </Link>
       </div>
 
-      <div className="bg-white rounded-lg shadow p-8 max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold mb-2">Request a Guide</h1>
+      <div className="bg-white/95 backdrop-blur rounded-3xl shadow-xl border border-orange-100 p-8 max-w-3xl mx-auto">
+        <h1 className="text-3xl font-extrabold text-gray-900 mb-2">Request a Guide</h1>
         <p className="text-gray-600 mb-6">
           Fill in the details below to request a personal guide for your trip
         </p>
@@ -126,7 +128,7 @@ export default function GuideBookingPage() {
               value={form.guideId}
               onChange={(e) => setForm({ ...form, guideId: e.target.value })}
               placeholder="Enter guide ID (e.g., userId from profile)"
-              className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 border border-orange-200 rounded-xl bg-orange-50/40 focus:outline-none focus:ring-2 focus:ring-orange-400"
               required
             />
             <p className="text-sm text-gray-500 mt-1">
@@ -143,7 +145,7 @@ export default function GuideBookingPage() {
               type="datetime-local"
               value={form.tripDate}
               onChange={(e) => setForm({ ...form, tripDate: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 border border-orange-200 rounded-xl bg-orange-50/40 focus:outline-none focus:ring-2 focus:ring-orange-400"
               required
             />
           </div>
@@ -160,7 +162,7 @@ export default function GuideBookingPage() {
               onChange={(e) =>
                 setForm({ ...form, duration: parseInt(e.target.value) })
               }
-              className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 border border-orange-200 rounded-xl bg-orange-50/40 focus:outline-none focus:ring-2 focus:ring-orange-400"
               required
             />
           </div>
@@ -175,7 +177,7 @@ export default function GuideBookingPage() {
               value={form.location}
               onChange={(e) => setForm({ ...form, location: e.target.value })}
               placeholder="e.g., Kathmandu, Pokhara"
-              className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 border border-orange-200 rounded-xl bg-orange-50/40 focus:outline-none focus:ring-2 focus:ring-orange-400"
               required
             />
           </div>
@@ -192,7 +194,7 @@ export default function GuideBookingPage() {
               onChange={(e) =>
                 setForm({ ...form, numberOfPeople: parseInt(e.target.value) })
               }
-              className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 border border-orange-200 rounded-xl bg-orange-50/40 focus:outline-none focus:ring-2 focus:ring-orange-400"
               required
             />
           </div>
@@ -208,7 +210,7 @@ export default function GuideBookingPage() {
               value={form.budget}
               onChange={(e) => setForm({ ...form, budget: parseFloat(e.target.value) })}
               placeholder="e.g., 100"
-              className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 border border-orange-200 rounded-xl bg-orange-50/40 focus:outline-none focus:ring-2 focus:ring-orange-400"
               required
             />
           </div>
@@ -223,7 +225,7 @@ export default function GuideBookingPage() {
               onChange={(e) => setForm({ ...form, description: e.target.value })}
               placeholder="Describe your trip, interests, and expectations..."
               rows={5}
-              className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 border border-orange-200 rounded-xl bg-orange-50/40 focus:outline-none focus:ring-2 focus:ring-orange-400"
               required
             />
           </div>
@@ -232,18 +234,19 @@ export default function GuideBookingPage() {
             <button
               type="submit"
               disabled={submitting}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded disabled:opacity-50 font-semibold"
+              className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-xl disabled:opacity-50 font-semibold"
             >
               {submitting ? "Sending..." : "Send Request"}
             </button>
             <Link
               href="/user/dashboard"
-              className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded font-semibold"
+              className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-2 rounded-xl font-semibold"
             >
               Cancel
             </Link>
           </div>
         </form>
+      </div>
       </div>
     </div>
   );

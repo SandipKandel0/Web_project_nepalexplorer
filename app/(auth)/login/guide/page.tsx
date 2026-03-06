@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { authAPI } from "@/lib/api/auth";
+import { handleLogin } from "@/lib/actions/auth-action";
 
 export default function GuideLoginPage() {
   const router = useRouter();
@@ -33,20 +34,21 @@ export default function GuideLoginPage() {
 
     try {
       setLoading(true);
-      const response = await authAPI.loginGuide(formData);
+      const response = await handleLogin({ ...formData, role: "guide" });
 
       if (response.success) {
-        // Add role to the data
         const guideData = { ...response.data, role: "guide" };
-        authAPI.setToken(response.data.token, "guide");
+        if (response.data?.token) {
+          authAPI.setToken(response.data.token, "guide");
+        }
         localStorage.setItem("guide_data", JSON.stringify(guideData));
-        localStorage.setItem("user_data", JSON.stringify(guideData)); // For unified access
+        localStorage.setItem("user_data", JSON.stringify(guideData));
         alert("Login successful!");
-        router.push("/guide/dashboard");
+        router.push(response.redirectUrl || "/guide/dashboard");
       }
     } catch (err: any) {
       console.error(err);
-      setError(err.response?.data?.message || "Login failed. Please try again.");
+      setError(err.message || "Login failed. Please try again.");
     } finally {
       setLoading(false);
     }

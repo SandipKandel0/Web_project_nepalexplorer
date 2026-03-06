@@ -118,30 +118,25 @@ function GuideBookedForm() {
   };
 
   return (
-    <div>
-      <div className="mb-6">
-        <Link
-          href="/user/destinations"
-          className="text-blue-600 hover:text-blue-800 font-semibold"
-        >
-          ← Back to Destinations
-        </Link>
-      </div>
-
-      <div className="bg-white rounded-lg shadow p-8 max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold mb-2">📋 Book a Guide</h1>
-        <p className="text-gray-600 mb-6">
+    <div className="min-h-screen bg-linear-to-br from-orange-50 via-amber-50 to-white py-8 px-4">
+      <div className="max-w-4xl mx-auto">
+      <div className="bg-white/95 backdrop-blur rounded-3xl shadow-xl border border-orange-100 p-8 max-w-3xl mx-auto">
+        <div className="mb-8">
+          <p className="inline-block px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-sm font-semibold mb-3">Guide Booking</p>
+          <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-2">Book a Local Guide</h1>
+          <p className="text-gray-600">
           Fill in the details below to request a personal guide for your trip
         </p>
+        </div>
 
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          <div className="bg-red-100 border border-red-300 text-red-700 px-4 py-3 rounded-xl mb-4">
             {error}
           </div>
         )}
 
         {success && (
-          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+          <div className="bg-green-100 border border-green-300 text-green-700 px-4 py-3 rounded-xl mb-4">
             {success}
           </div>
         )}
@@ -149,7 +144,7 @@ function GuideBookedForm() {
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Name */}
           <div>
-            <label className="block text-gray-700 font-semibold mb-2">
+            <label className="block text-gray-800 font-semibold mb-2">
               Full Name *
             </label>
             <input
@@ -157,14 +152,14 @@ function GuideBookedForm() {
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
               placeholder="Enter your full name"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 border border-orange-200 rounded-xl bg-orange-50/40 focus:outline-none focus:ring-2 focus:ring-orange-400"
               required
             />
           </div>
 
           {/* Email */}
           <div>
-            <label className="block text-gray-700 font-semibold mb-2">
+            <label className="block text-gray-800 font-semibold mb-2">
               Email Address *
             </label>
             <input
@@ -172,14 +167,14 @@ function GuideBookedForm() {
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
               placeholder="Enter your email"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 border border-orange-200 rounded-xl bg-orange-50/40 focus:outline-none focus:ring-2 focus:ring-orange-400"
               required
             />
           </div>
 
           {/* Phone */}
           <div>
-            <label className="block text-gray-700 font-semibold mb-2">
+            <label className="block text-gray-800 font-semibold mb-2">
               Phone Number *
             </label>
             <input
@@ -187,14 +182,14 @@ function GuideBookedForm() {
               value={form.phone}
               onChange={(e) => setForm({ ...form, phone: e.target.value })}
               placeholder="Enter your phone number"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 border border-orange-200 rounded-xl bg-orange-50/40 focus:outline-none focus:ring-2 focus:ring-orange-400"
               required
             />
           </div>
 
           {/* Destination */}
           <div>
-            <label className="block text-gray-700 font-semibold mb-2">
+            <label className="block text-gray-800 font-semibold mb-2">
               Destination *
             </label>
             <input
@@ -202,21 +197,21 @@ function GuideBookedForm() {
               value={form.location}
               onChange={(e) => setForm({ ...form, location: e.target.value })}
               placeholder="e.g., Kathmandu, Pokhara, Everest Base Camp"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 border border-orange-200 rounded-xl bg-orange-50/40 focus:outline-none focus:ring-2 focus:ring-orange-400"
               required
             />
           </div>
 
           {/* Booking Date */}
           <div>
-            <label className="block text-gray-700 font-semibold mb-2">
+            <label className="block text-gray-800 font-semibold mb-2">
               Booking Date *
             </label>
             <input
               type="date"
               value={form.bookingDate}
               onChange={(e) => setForm({ ...form, bookingDate: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 border border-orange-200 rounded-xl bg-orange-50/40 focus:outline-none focus:ring-2 focus:ring-orange-400"
               required
             />
           </div>
@@ -224,7 +219,7 @@ function GuideBookedForm() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Trip Duration */}
             <div>
-              <label className="block text-gray-700 font-semibold mb-2">
+                <label className="block text-gray-800 font-semibold mb-2">
                 Trip Duration (days) *
               </label>
               <input
@@ -234,14 +229,14 @@ function GuideBookedForm() {
                 onChange={(e) =>
                   setForm({ ...form, tripDuration: parseInt(e.target.value) || 1 })
                 }
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 border border-orange-200 rounded-xl bg-orange-50/40 focus:outline-none focus:ring-2 focus:ring-orange-400"
                 required
               />
             </div>
 
             {/* Number of People */}
             <div>
-              <label className="block text-gray-700 font-semibold mb-2">
+                <label className="block text-gray-800 font-semibold mb-2">
                 Number of People *
               </label>
               <input
@@ -251,7 +246,7 @@ function GuideBookedForm() {
                 onChange={(e) =>
                   setForm({ ...form, numberOfPeople: parseInt(e.target.value) || 1 })
                 }
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 border border-orange-200 rounded-xl bg-orange-50/40 focus:outline-none focus:ring-2 focus:ring-orange-400"
                 required
               />
             </div>
@@ -259,7 +254,7 @@ function GuideBookedForm() {
 
           {/* Language */}
           <div>
-            <label className="block text-gray-700 font-semibold mb-2">
+            <label className="block text-gray-800 font-semibold mb-2">
               Preferred Language *
             </label>
             <input
@@ -267,14 +262,14 @@ function GuideBookedForm() {
               value={form.language}
               onChange={(e) => setForm({ ...form, language: e.target.value })}
               placeholder="e.g., English, Nepali, Hindi"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 border border-orange-200 rounded-xl bg-orange-50/40 focus:outline-none focus:ring-2 focus:ring-orange-400"
               required
             />
           </div>
 
           {/* Custom Message */}
           <div>
-            <label className="block text-gray-700 font-semibold mb-2">
+            <label className="block text-gray-800 font-semibold mb-2">
               Custom Message *
             </label>
             <textarea
@@ -282,7 +277,7 @@ function GuideBookedForm() {
               onChange={(e) => setForm({ ...form, customMessage: e.target.value })}
               placeholder="Tell us about your trip, interests, special requirements, and expectations..."
               rows={5}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 border border-orange-200 rounded-xl bg-orange-50/40 focus:outline-none focus:ring-2 focus:ring-orange-400"
               required
             />
           </div>
@@ -291,18 +286,19 @@ function GuideBookedForm() {
             <button
               type="submit"
               disabled={submitting}
-              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg disabled:opacity-50 font-semibold transition"
+              className="flex-1 bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-xl disabled:opacity-50 font-semibold transition"
             >
               {submitting ? "Sending Request..." : "Send Booking Request"}
             </button>
             <Link
               href="/user/destinations"
-              className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold transition flex items-center justify-center"
+              className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-3 rounded-xl font-semibold transition flex items-center justify-center"
             >
               Cancel
             </Link>
           </div>
         </form>
+      </div>
       </div>
     </div>
   );

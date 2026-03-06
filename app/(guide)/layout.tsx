@@ -3,6 +3,7 @@
 import { ReactNode, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import NotificationsDropdown from "@/app/(public)/user/_components/NotificationsDropdown";
 
 export default function GuideLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -55,6 +56,11 @@ export default function GuideLayout({ children }: { children: ReactNode }) {
               </Link>
             </div>
 
+            {/* Right Side Icons */}
+            <div className="hidden md:flex items-center gap-4">
+              <NotificationsDropdown />
+            </div>
+
             {/* Mobile Menu Button */}
             <button
               className="md:hidden text-gray-700 hover:text-orange-600"
@@ -97,6 +103,9 @@ export default function GuideLayout({ children }: { children: ReactNode }) {
               >
                 👤 Profile
               </Link>
+              <div className="py-2 px-4 border-t border-gray-200 mt-2">
+                <NotificationsDropdown />
+              </div>
             </div>
           )}
         </div>

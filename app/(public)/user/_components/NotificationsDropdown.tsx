@@ -24,7 +24,14 @@ export default function NotificationsDropdown() {
     try {
       setLoading(true);
       const response = await getNotifications();
-      setNotifications(response.data);
+      const list = Array.isArray(response)
+        ? response
+        : Array.isArray(response?.data)
+        ? response.data
+        : Array.isArray(response?.data?.data)
+        ? response.data.data
+        : [];
+      setNotifications(list);
       setError("");
     } catch (err: any) {
       setError(err.message || "Failed to fetch notifications");
@@ -66,7 +73,7 @@ export default function NotificationsDropdown() {
     localStorage.removeItem("favorite_destinations");
     
     // Redirect to login page
-    router.push("/login/user");
+    router.push("/login");
   };
 
   return (
