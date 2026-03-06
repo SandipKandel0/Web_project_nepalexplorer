@@ -2,11 +2,22 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { getAllUsers, deleteUser } from "@/lib/api/admin";
-import { MdEdit, MdDelete, MdAdd } from "react-icons/md";
+import { getAllUsers, getAllGuides, deleteUser, deleteGuide } from "@/lib/api/admin";
+import { handleLogout } from "@/lib/actions/auth-action";
+import { MdEdit, MdDelete } from "react-icons/md";
+
+interface AdminAccountRow {
+  _id: string;
+  fullName: string;
+  email: string;
+  username?: string;
+  role: "admin" | "user" | "guide";
+  phone?: string;
+  phoneNumber?: string;
+}
 
 export default function UsersPage() {
-  const [users, setUsers] = useState<any[]>([]);
+  const [accounts, setAccounts] = useState<AdminAccountRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -17,39 +28,63 @@ export default function UsersPage() {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const response = await getAllUsers();
-      setUsers(response.data);
+      const [usersResponse, guidesResponse] = await Promise.all([
+        getAllUsers(),
+        getAllGuides(),
+      ]);
+
+      const users = ((usersResponse?.data || []) as any[]).map((user) => ({
+        ...user,
+        role: (user.role === "admin" ? "admin" : "user") as "admin" | "user",
+      })) as AdminAccountRow[];
+
+      const guides = ((guidesResponse?.data || []) as any[]).map((guide) => ({
+        ...guide,
+        role: "guide" as const,
+      }));
+
+      setAccounts([...users, ...guides]);
       setError("");
     } catch (err: any) {
-      setError(err.message || "Failed to fetch users");
+      setError(err.message || "Failed to fetch users and guides");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDelete = async (userId: string) => {
-    if (!confirm("Are you sure you want to delete this user?")) return;
+  const handleDelete = async (account: AdminAccountRow) => {
+    const label = account.role === "guide" ? "guide" : "user";
+    if (!confirm(`Are you sure you want to delete this ${label}?`)) return;
 
     try {
-      await deleteUser(userId);
-      setUsers(users.filter((u) => u._id !== userId));
+      if (account.role === "guide") {
+        await deleteGuide(account._id);
+      } else {
+        await deleteUser(account._id);
+      }
+
+      setAccounts((prev) => prev.filter((u) => u._id !== account._id));
     } catch (err: any) {
-      setError(err.message || "Failed to delete user");
+      setError(err.message || "Failed to delete account");
     }
   };
 
   if (loading) return <div className="text-center py-8">Loading...</div>;
 
   return (
-    <div>
+    <div className="text-black">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Users Management</h1>
-        <Link
-          href="/admin/users/create"
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded flex items-center gap-2"
-        >
-          <MdAdd size={20} /> Create User
-        </Link>
+        <h1 className="text-3xl font-bold text-black">Users & Guides Management</h1>
+        <div className="flex items-center gap-3">
+          <form action={handleLogout}>
+            <button
+              type="submit"
+              className="bg-red-200 hover:bg-red-300 text-black px-4 py-2 rounded"
+            >
+              Logout
+            </button>
+          </form>
+        </div>
       </div>
 
       {error && (
@@ -58,58 +93,64 @@ export default function UsersPage() {
         </div>
       )}
 
-      <div className="overflow-x-auto bg-white rounded-lg shadow">
+      <div className="overflow-x-auto bg-white rounded-lg shadow text-black">
         <table className="w-full">
           <thead className="bg-gray-100 border-b">
             <tr>
-              <th className="px-6 py-3 text-left text-sm font-semibold">Name</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold">Email</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold">
+              <th className="px-6 py-3 text-left text-sm font-semibold text-black">Name</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-black">Email</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-black">
                 Username
               </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold">Role</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold">
+              <th className="px-6 py-3 text-left text-sm font-semibold text-black">Role</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-black">
                 Phone
               </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold">
+              <th className="px-6 py-3 text-left text-sm font-semibold text-black">
                 Actions
               </th>
             </tr>
           </thead>
           <tbody>
-            {users.map((user) => (
-              <tr key={user._id} className="border-b hover:bg-gray-50">
-                <td className="px-6 py-3">{user.fullName}</td>
-                <td className="px-6 py-3">{user.email}</td>
-                <td className="px-6 py-3">{user.username}</td>
-                <td className="px-6 py-3">
+            {accounts.map((user) => (
+              <tr key={user._id} className="border-b hover:bg-gray-50 text-black">
+                <td className="px-6 py-3 text-black">{user.fullName}</td>
+                <td className="px-6 py-3 text-black">{user.email}</td>
+                <td className="px-6 py-3 text-black">{user.username || "-"}</td>
+                <td className="px-6 py-3 text-black">
                   <span
                     className={`px-3 py-1 rounded text-sm font-medium ${
                       user.role === "admin"
-                        ? "bg-red-100 text-red-800"
-                        : "bg-green-100 text-green-800"
+                        ? "bg-red-100 text-black"
+                        : user.role === "guide"
+                        ? "bg-blue-100 text-black"
+                        : "bg-green-100 text-black"
                     }`}
                   >
                     {user.role}
                   </span>
                 </td>
-                <td className="px-6 py-3">{user.phoneNumber}</td>
-                <td className="px-6 py-3 flex gap-3">
-                  <Link
-                    href={`/admin/users/${user._id}`}
-                    className="text-blue-600 hover:text-blue-800"
-                  >
-                    View
-                  </Link>
-                  <Link
-                    href={`/admin/users/${user._id}/edit`}
-                    className="text-amber-600 hover:text-amber-800 flex items-center gap-1"
-                  >
-                    <MdEdit size={16} /> Edit
-                  </Link>
+                <td className="px-6 py-3 text-black">{user.phoneNumber || user.phone || "-"}</td>
+                <td className="px-6 py-3 flex gap-3 text-black">
+                  {user.role !== "guide" && (
+                    <>
+                      <Link
+                        href={`/admin/users/${user._id}`}
+                        className="text-black hover:underline"
+                      >
+                        View
+                      </Link>
+                      <Link
+                        href={`/admin/users/${user._id}/edit`}
+                        className="text-black hover:underline flex items-center gap-1"
+                      >
+                        <MdEdit size={16} /> Edit
+                      </Link>
+                    </>
+                  )}
                   <button
-                    onClick={() => handleDelete(user._id)}
-                    className="text-red-600 hover:text-red-800 flex items-center gap-1"
+                    onClick={() => handleDelete(user)}
+                    className="text-black hover:underline flex items-center gap-1"
                   >
                     <MdDelete size={16} /> Delete
                   </button>
@@ -120,9 +161,9 @@ export default function UsersPage() {
         </table>
       </div>
 
-      {users.length === 0 && (
-        <div className="text-center py-8 text-gray-500">
-          No users found. Create one to get started.
+      {accounts.length === 0 && (
+        <div className="text-center py-8 text-black">
+          No users or guides found.
         </div>
       )}
     </div>

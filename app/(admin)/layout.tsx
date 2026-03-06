@@ -16,12 +16,6 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
               Users Management
             </Link>
             <Link
-              href="/admin/users/create"
-              className="block px-4 py-2 rounded hover:bg-slate-700 transition"
-            >
-              Create User
-            </Link>
-            <Link
               href="/user/profile"
               className="block px-4 py-2 rounded hover:bg-slate-700 transition"
             >
